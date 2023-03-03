@@ -1,0 +1,3 @@
+# Used python packages for the dev-process
+pylint
+pytest

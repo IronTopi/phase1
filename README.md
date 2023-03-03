@@ -54,3 +54,8 @@ The versions of FastAPI and MongoDB can are pinned in the `.env` file.
 PROJECT_PREFIX=phase1
 MONGO_VERSION=6.0.4
 ```
+
+## Things that have not been done
+
+- API-Versioning (maybe URL-versioning like `myapi/v1/`, see [FastAPI routers](https://fastapi.tiangolo.com/tutorial/bigger-applications/))
+- SSL (maybe offload to API-Gateway like [Kong](https://konghq.com/))
