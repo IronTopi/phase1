@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
-class City (BaseModel):
-    id: int
+class City (BaseModel):    
+    id: int    
     city: str # UTF-8!!!
     start_date: str # more like date, US-locale formatted
     end_data: str # more like date

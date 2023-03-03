@@ -1,7 +1,7 @@
-from typing import Any, List
+from typing import Any, List, Dict
 from abc import ABC
 
-import api.models.City
+from api.models.City import City
 
 class IDatabaseConnection (ABC):
     def __init__ (self, connectionData: Dict [str, Any]):
@@ -10,6 +10,7 @@ class IDatabaseConnection (ABC):
         Args:
             connectionData (Dict[str, Any]): Connection config (connection string), shape depends on specific database
         """
+        pass
 
     def getAllCities (self) -> List [City]:
         """Returns all stored cities.
@@ -18,9 +19,13 @@ class IDatabaseConnection (ABC):
         Returns:
             List [City]: All cities as full models (not only id)
         """
+        pass
 
     def updateCity (self, city: City):
+        pass
 
     def insertCity (self, city: City):
+        pass
 
     def deleteCity (self, city: City):
+        pass

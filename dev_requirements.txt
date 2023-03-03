@@ -1,3 +1,4 @@
 # Used python packages for the dev-process
+# TODO: move to backend devcontainer
 pylint
 pytest

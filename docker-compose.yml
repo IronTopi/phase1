@@ -2,8 +2,8 @@ services:
   database:
     image: mongo:${MONGO_VERSION}
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=user
-      - MONGO_INITDB_ROOT_PASSWORD=pass
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
     volumes:
       - database_persistence:/data/db
 
@@ -15,6 +15,13 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    environment:
+      - MONGO_IP=${MONGO_IP}
+      - MONGO_PORT=${MONGO_PORT}
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DB=${MONGO_DB}
+      - MONGO_COLLECTION=${MONGO_COLLECTION}
     volumes:
       - ./backend/src:/app # two-way mount at runtime
     ports:

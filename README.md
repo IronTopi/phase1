@@ -59,3 +59,4 @@ MONGO_VERSION=6.0.4
 
 - API-Versioning (maybe URL-versioning like `myapi/v1/`, see [FastAPI routers](https://fastapi.tiangolo.com/tutorial/bigger-applications/))
 - SSL (maybe offload to API-Gateway like [Kong](https://konghq.com/))
+- Proper logging (maybe use vanilla python logger, for larger systems implement log aggregation: let something like loki read your stdout/stderr)

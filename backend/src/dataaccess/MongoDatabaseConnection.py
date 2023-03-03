@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from dataaccess.IDatabaseConnection import IDatabaseConnection
 
 class MongoDatabaseConnection (IDatabaseConnection):
+    pass
 
 
 class MongoConnectionConfig (BaseModel):

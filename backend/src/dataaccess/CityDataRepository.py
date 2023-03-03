@@ -1,11 +1,12 @@
-from IDatabaseConnection import IDatabaseConnection
+from dataaccess.IDatabaseConnection import IDatabaseConnection
 from api.models.City import City
 
-class CityDataRepository()
+class CityDataRepository():
     def __init__(self, databaseConnection: IDatabaseConnection):
         pass
 
     def getAllCities (self):
+        pass
 
     def insertCity (self, city: City) -> City:
         """Inserts city 'city'.
@@ -20,3 +21,4 @@ class CityDataRepository()
         # TODO: Document exception that might occur on this level
         # validation of input-data should take place WHERE?
         # Here or here + in http-layer?
+        pass
