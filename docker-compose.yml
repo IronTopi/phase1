@@ -1,0 +1,36 @@
+services:
+  database:
+    image: mongo:${MONGO_VERSION}
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+    volumes:
+      - database_persistence:/data/db
+
+    ports:
+        - "27017:27017" # TODO: remove for production! Access through port forwarding!
+    
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend/src:/app # two-way mount at runtime
+    ports:
+      - "8080:80"
+
+    command: uvicorn backend_http:app --host 0.0.0.0 --port 80
+
+
+    
+volumes:
+  database_persistence:
+
+  #myapplication:
+  #  image: mongodb/mongodb-community-server:6.0-ubi8
+  #  environment:
+  #    - CONN_STR=mongodb://user:pass@mongodb
+  #  command: '/bin/bash -c "sleep 5; mongosh $$CONN_STR --eval \"show dbs;\""'
+  #  depends_on:
+  #    - database # TODO: depend on seeding-task being completed!
