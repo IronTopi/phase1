@@ -19,6 +19,7 @@ class IDatabaseConnection (ABC):
         Returns:
             List [City]: All cities as full models (not only id)
         """
+        # TODO: raise NotImplemented? Or what's best practice for ABCs?
         pass
 
     def updateCity (self, city: City):

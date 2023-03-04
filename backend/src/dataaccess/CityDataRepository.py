@@ -1,11 +1,14 @@
+from typing import List
+
 from dataaccess.IDatabaseConnection import IDatabaseConnection
 from api.models.City import City
 
 class CityDataRepository():
     def __init__(self, databaseConnection: IDatabaseConnection):
-        pass
+        self.DatabaseConnection = databaseConnection
+        
 
-    def getAllCities (self):
+    def getAllCities (self) -> List[City]:
         pass
 
     def insertCity (self, city: City) -> City:

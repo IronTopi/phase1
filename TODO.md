@@ -2,7 +2,7 @@
 
 ## Concept
 
-- [ ] Clear up domain: are the data best interpreted as being cities?
+- [ ] Clear up domain: are the data best interpreted as being cities? -> Rename to `Items`
 
 ## Dev-Setup
 

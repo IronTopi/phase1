@@ -1,0 +1,2 @@
+# Requirements for the data-seeder
+pymongo==4.3.3
