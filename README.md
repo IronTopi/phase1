@@ -38,9 +38,10 @@ TODO: Format as table
 {"id":59,"city":"Diwopu","start_date":"2/20/2015","end_date":"12/12/2014","price":"81.90","status":"Daily","color":"#08c51b"}
 ```
 
-## Techstack
+## Development and Tech
 
 - http-API: [FastAPI](https://fastapi.tiangolo.com/)
+- Data validation: [Pydantic](https://docs.pydantic.dev/)
 - Database: [MongoDB](https://www.mongodb.com/)
 - Containerization: 🐳 [docker](https://www.docker.com/)
 

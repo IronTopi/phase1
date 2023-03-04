@@ -22,22 +22,12 @@ ItemRepo: CityDataRepository
 
 @app.get("/")
 def getAllCities() -> List[City]:
-    return [
-        City(
-            id=2321,
-            city="city",
-            start_date="11",
-            end_data="123",
-            price="asdf",
-            status="asdf",
-            color="#123456",
-        )
-    ]
+    return ItemRepo.getAllCities()
 
 
 @app.post("/")
 def addCity(item: City, credentials: HTTPBasicCredentials = Depends(security)) -> City:
-    return item
+    return ItemRepo.insertCity (item)
 
 
 @app.get("/items/{item_id}")

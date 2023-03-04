@@ -1,7 +1,9 @@
+"""Interface to the persistence layer.
+Sends/Receives data in a generic structure (Dict) to the upper (domain) level."""
 from typing import Any, List, Dict
 from abc import ABC
 
-from api.models.City import City
+
 
 class IDatabaseConnection (ABC):
     def __init__ (self, connectionData: Dict [str, Any]):
@@ -12,7 +14,7 @@ class IDatabaseConnection (ABC):
         """
         pass
 
-    def getAllCities (self) -> List [City]:
+    def getAllCities (self) -> List [Dict]:
         """Returns all stored cities.
         (No pagination!)
 
@@ -21,12 +23,15 @@ class IDatabaseConnection (ABC):
         """
         # TODO: raise NotImplemented? Or what's best practice for ABCs?
         pass
-
-    def updateCity (self, city: City):
+    
+    def getCity (self, id: int) -> Dict:
         pass
 
-    def insertCity (self, city: City):
+    def updateCity (self, itemData: Dict):
         pass
 
-    def deleteCity (self, city: City):
+    def insertCity (self, itemData: Dict):
+        pass
+
+    def deleteCity (self, id: int):
         pass

@@ -1,7 +1,8 @@
-from typing import List
+from typing import List, Dict
 
 from dataaccess.IDatabaseConnection import IDatabaseConnection
 from api.models.City import City
+from pydantic import ValidationError 
 
 class CityDataRepository():
     def __init__(self, databaseConnection: IDatabaseConnection):
@@ -9,19 +10,35 @@ class CityDataRepository():
         
 
     def getAllCities (self) -> List[City]:
-        pass
+        rawItems = self.DatabaseConnection.getAllCities()
+        items = []
 
-    def insertCity (self, city: City) -> City:
-        """Inserts city 'city'.
+        for item in rawItems:
+            try:
+                print (item)
+                items.append (City.parse_obj (item))
+            
+            except Exception as ex:
+                print (ex)
+        
+        return items
+
+    def insertCity (self, itemData: City):
+        """_summary_
 
         Args:
-            city (City): City to insert
-
-        Returns:
-            City: Newly inserted city
+            itemData (Dict): _description_
         """
-
         # TODO: Document exception that might occur on this level
         # validation of input-data should take place WHERE?
         # Here or here + in http-layer?
-        pass
+
+
+        
+        # TODO: error-handling
+        # ID will be generated in persistence layer
+        insertedData = self.DatabaseConnection.insertCity (itemData.dict())
+        return City.parse_obj (insertedData)
+        
+
+
