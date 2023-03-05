@@ -72,11 +72,7 @@ The following technologies are being used:
 ### Versions
 
 The version of the MongoDB is pinned in the `.env` file.
-The **seeder** and **backend**-services have their version defined in their respective `Dockerfile`s.
-
-```[.env]
-MONGO_VERSION=6.0.4
-```
+The **seeder** and **backend**-services have their python-version defined in their respective `Dockerfile`s.
 
 ### Logs
 
