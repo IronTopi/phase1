@@ -7,8 +7,8 @@ import json
 from typing import Dict
 from pymongo import MongoClient
 
-print ("SEEEEEDER111")
 
+# Setup db-connection using config from environment
 IP=os.environ["MONGO_IP"]
 Port=int(os.environ["MONGO_PORT"])
 User=os.environ["MONGO_USER"]
@@ -16,28 +16,20 @@ Password=os.environ["MONGO_PASSWORD"]
 Database=os.environ["MONGO_DB"]
 Collection=os.environ["MONGO_COLLECTION"]
 
-print (IP)
-print (Password)
-print (os.getcwd())
 
-# TODO: das muss durch urllib.parse.quote_plus gehen!
 client = MongoClient (host=IP, port=Port,username=User, password=Password )
-
 db = client [Database]
 collection = db[Collection]
 
+# Only insert data if collection does not have any entries
+numberEntries = collection.count_documents ({})
 
-
-
-def readData (filePath: str) -> Dict:
-    with open (filePath, encoding="utf-8") as dataFile:
+if numberEntries == 0:
+    with open ("/app/data.json", encoding="utf-8") as dataFile:
         data = json.load(dataFile)
-        return data
+        collection.insert_many (data)   
 
-data = readData ("/app/data.json")
-print (data)
+        print ("inserted seed-data")     
 
-
-for item in data:
-    print (str(item))
-    collection.insert_one(item)
+else:
+    print ("database already contains entries, will not insert seed-data")
