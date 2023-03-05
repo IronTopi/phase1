@@ -21,21 +21,20 @@ from dataaccess.MongoDatabaseConnection import (
 
 from api.models.Item import Item
 
-app = FastAPI()
+app = FastAPI(dependencies=[Depends (validateCredentials)])
 
 
 ItemRepo: ItemDataRepository
 
 
 @app.get("/items/")
-def getAllItems(credentials: HTTPBasicCredentials = Depends (validateCredentials)) -> List[Item]:
+def getAllItems() -> List[Item]:
     return ItemRepo.getAllItems()
 
 
 @app.get("/items/{itemId}")
 def read_item(
-    itemId: int,
-    credentials: HTTPBasicCredentials = Depends (validateCredentials)
+    itemId: int
 ):
     try:
         return ItemRepo.getItem (itemId)
@@ -49,12 +48,12 @@ def read_item(
 
 
 @app.post("/items/")
-def createItem(item: Item, credentials: HTTPBasicCredentials = Depends (validateCredentials)) -> Item:
+def createItem(item: Item) -> Item:
     return ItemRepo.insertItem (item)
 
 
 @app.put("/items/{itemId}")
-def updateItem(itemId: int, item: Item, credentials: HTTPBasicCredentials = Depends (validateCredentials)) -> Item:
+def updateItem(itemId: int, item: Item) -> Item:
     # TODO: allow partial input?
     # TODO: shitty design, we need id in url but dont use it
     # -> Best practice?!?!?
@@ -66,7 +65,7 @@ def updateItem(itemId: int, item: Item, credentials: HTTPBasicCredentials = Depe
 
 
 @app.delete("/items/{itemId}")
-def deleteItem(itemId: int, credentials: HTTPBasicCredentials = Depends (validateCredentials)):
+def deleteItem(itemId: int):
     try:
         ItemRepo.deleteItem (itemId)
     
