@@ -58,11 +58,3 @@ services:
 
 volumes:
   database_persistence:
-
-  #myapplication:
-  #  image: mongodb/mongodb-community-server:6.0-ubi8
-  #  environment:
-  #    - CONN_STR=mongodb://user:pass@mongodb
-  #  command: '/bin/bash -c "sleep 5; mongosh $$CONN_STR --eval \"show dbs;\""'
-  #  depends_on:
-  #    - database # TODO: depend on seeding-task being completed!

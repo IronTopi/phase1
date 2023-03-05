@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class City (BaseModel):    
+class Item (BaseModel):    
     id: int = -1 # Server-generated  
     city: str # UTF-8!!!
     start_date: str # more like date, US-locale formatted

@@ -49,15 +49,15 @@ TODO: small architecture diagram
 
 ### Versions
 
-The versions of FastAPI and MongoDB can are pinned in the `.env` file.
+The version of the MongoDB can is pinned in the `.env` file.
+The **seeder** and **backend**-services have their version defined in their respective `Dockerfile`s.
 
 ``` [.env]
-PROJECT_PREFIX=phase1
 MONGO_VERSION=6.0.4
 ```
 
 ## Things that have not been done
 
 - API-Versioning (maybe URL-versioning like `myapi/v1/`, see [FastAPI routers](https://fastapi.tiangolo.com/tutorial/bigger-applications/))
-- SSL (maybe offload to API-Gateway like [Kong](https://konghq.com/))
+- SSL, rate-limiting (maybe offload to API-Gateway like [Kong](https://konghq.com/))
 - Proper logging (maybe use vanilla python logger, for larger systems implement log aggregation: let something like loki read your stdout/stderr)

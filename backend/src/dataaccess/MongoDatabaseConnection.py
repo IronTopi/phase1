@@ -2,10 +2,8 @@ from typing import Dict, List, Any
 
 from pydantic import BaseModel
 from pymongo import MongoClient
-from dataaccess.IDatabaseConnection import IDatabaseConnection
+from dataaccess.IDatabaseConnection import IDatabaseConnection, ItemNotFound
 
-# TODO: remove, only Dict-data here!!!
-from api.models.City import City
 
 class MongoDatabaseConnection (IDatabaseConnection):
     def __init__ (self, connectionData: Dict [str, Any]):
@@ -14,23 +12,24 @@ class MongoDatabaseConnection (IDatabaseConnection):
         Args:
             connectionData (Dict[str, Any]): Connection config (connection string), shape depends on specific database
         """
-        # 
         mongoConnectionData = MongoConnectionConfig.parse_obj (connectionData)
 
         self.Client = MongoClient (host=mongoConnectionData.IP, port=mongoConnectionData.Port,username=mongoConnectionData.User, password=mongoConnectionData.Password )
 
         self.DB = self.Client [mongoConnectionData.Database]
         self.Collection = self.DB[mongoConnectionData.Collection]
-
-        # TODO: make property?!
-        self.NextID = self._getMaxID ()
+        
+        self._NextID = self._getMaxID ()
 
     
 
 
     def _getMaxID (self) -> int:
-        # db.things.find_one(sort=[("uid", pymongo.DESCENDING)])
-        #highestId = self.Collection.find({}, {"id": 1}).sort("id",-1).limit(1)
+        """Finds the max value of the already existing ids in the collection.
+
+        Returns:
+            int: Highest existing ID (or 0, if there are no ids yet)
+        """
         try:
             maxID = self.Collection.find_one({}, {"id": 1}, sort=[("id",-1)])["id"]
         
@@ -42,31 +41,51 @@ class MongoDatabaseConnection (IDatabaseConnection):
         return maxID
     
     def _getNextID (self) -> int:
-        self.NextID += 1
-        return self.NextID
+        self._NextID += 1
+        return self._NextID
 
 
-    def getAllCities (self) -> List [Dict]:
-        """Returns all stored cities.
+    def getAllItems (self) -> List [Dict]:
+        """Returns all stored items.
         (No pagination!)
         """
         return self.Collection.find ({})
         
+    def getItem (self, itemId: int):
+        itemData = self.Collection.find_one ({"id": itemId})
 
-    def updateCity (self, d: City):
-        pass
+        if not itemData:
+            raise ItemNotFound (f"item with id '{str(itemId)}' not found in database")
 
-    def insertCity (self, city: Dict):
-        # TODO: generate ID
-        city ["id"] = self._getNextID()
+        # TODO: generic "not found"-exception
+        return itemData
+
+
+
+    def insertItem (self, item: Dict):
+        # generate ID
+        item ["id"] = self._getNextID()
 
         # TODO: check if succeeded
-        self.Collection.insert_one (city)
+        self.Collection.insert_one (item)
 
-        return city
+        return item
+    
+    def updateItem (self, d: Dict):
+        result = self.Collection.update_one ({"id": d["id"]}, {"$set": d})
 
-    def deleteCity (self, city: City):
-        pass
+        if result.matched_count != 1:
+            raise ItemNotFound ((f"item with id '{str( d['id'])}' not found in database"))
+
+        
+
+    def deleteItem (self, itemId: int):
+        # TODO: what should be returned?
+        numberMatches = self.Collection.count_documents ({"id": int (itemId)})
+        if numberMatches == 0:
+            raise ItemNotFound (f"item with id '{str(itemId)}' not found in database")
+            
+        self.Collection.delete_one ({"id": int (itemId)})
 
 
 

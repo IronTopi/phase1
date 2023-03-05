@@ -2,61 +2,90 @@ from typing import List
 import os
 
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
+# TODO: move all domain-level validation out of the http-layer?
+from pydantic import ValidationError
+
+# TODO: remove, 
+
 # DB-connection modules, might want to move the whole topic
-from dataaccess.CityDataRepository import CityDataRepository
+from dataaccess.ItemDataRepository import ItemDataRepository, ItemNotFound
 from dataaccess.MongoDatabaseConnection import (
     MongoDatabaseConnection,
     MongoConnectionConfig,
 )
 
-from api.models.City import City
+from api.models.Item import Item
 
 app = FastAPI()
 security = HTTPBasic()
 
-ItemRepo: CityDataRepository
+ItemRepo: ItemDataRepository
 
 
-@app.get("/")
-def getAllCities() -> List[City]:
-    return ItemRepo.getAllCities()
+@app.get("/items/")
+def getAllItems() -> List[Item]:
+    return ItemRepo.getAllItems()
 
 
-@app.post("/")
-def addCity(item: City, credentials: HTTPBasicCredentials = Depends(security)) -> City:
-    return ItemRepo.insertCity (item)
-
-
-@app.get("/items/{item_id}")
+@app.get("/items/{itemId}")
 def read_item(
-    item_id: int,
-    q: str | None = None,
-    credentials: HTTPBasicCredentials = Depends(security),
+    itemId: int,
+    credentials: HTTPBasicCredentials = Depends(security)
 ):
-    return {"item_id": item_id, "q": q}
+    try:
+        return ItemRepo.getItem (itemId)
+
+    except ValidationError as ve:
+        raise HTTPException (500, detail=str (ve)) from ve
+
+    except ItemNotFound as itemNotFound:
+        raise HTTPException (404, detail=str (itemNotFound)) from itemNotFound
 
 
-@app.get("/db-creds")
-def getDbCredentials():
-    return {
-        "user": os.environ["MONGO_USER"],
-        "password": os.environ["MONGO_PASSWORD"],
-        "db": os.environ["MONGO_DB"],
-        "collection": os.environ["MONGO_COLLECTION"],
-    }
+
+@app.post("/items/")
+def createItem(item: Item, credentials: HTTPBasicCredentials = Depends(security)) -> Item:
+    return ItemRepo.insertItem (item)
 
 
-# Setup underlying layers
+@app.put("/items/{itemId}")
+def updateItem(itemId: int, item: Item, credentials: HTTPBasicCredentials = Depends(security)) -> Item:
+    # TODO: allow partial input?
+    # TODO: shitty design, we need id in url but dont use it
+    # -> Best practice?!?!?
+    try:
+        return ItemRepo.updateItem (item)
+    
+    except ItemNotFound as itemNotFound:
+        raise HTTPException (404, detail=str (itemNotFound)) from itemNotFound
+
+
+@app.delete("/items/{itemId}")
+def deleteItem(itemId: int, credentials: HTTPBasicCredentials = Depends(security)):
+    try:
+        ItemRepo.deleteItem (itemId)
+    
+    except ItemNotFound as itemNotFound:
+        raise HTTPException (404, detail=str (itemNotFound)) from itemNotFound
+    
+
+
+
+
+
+##########
+# Orchestration
+# Set up underlying layers
 @app.on_event("startup")
 async def startup():
     # Setup repo
     global ItemRepo
 
     dbConnection = setupMongoConnection()
-    ItemRepo = CityDataRepository(dbConnection)
+    ItemRepo = ItemDataRepository(dbConnection)
 
 
 def setupMongoConnection():
