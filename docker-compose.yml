@@ -15,8 +15,9 @@ services:
       context: ./seeder
       dockerfile: Dockerfile
 
-    stdin_open: true # docker run -i
-    tty: true # docker run -t
+    depends_on:
+      database:
+        condition: service_started
 
     environment:
       - MONGO_IP=${MONGO_IP} # TODO: >>-style injection?
@@ -35,6 +36,12 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    depends_on:
+      seeder:
+        condition: service_completed_successfully
+      database:
+        condition: service_started
+
     environment:
       - MONGO_IP=${MONGO_IP}
       - MONGO_PORT=${MONGO_PORT}
