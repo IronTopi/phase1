@@ -49,6 +49,8 @@ services:
       - MONGO_PASSWORD=${MONGO_PASSWORD}
       - MONGO_DB=${MONGO_DB}
       - MONGO_COLLECTION=${MONGO_COLLECTION}
+      - API_USER=${API_USER}
+      - API_PASSWORD=${API_PASSWORD}
     volumes:
       - ./backend/src:/app # two-way mount at runtime
     ports:

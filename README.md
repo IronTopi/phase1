@@ -25,7 +25,7 @@ The whole application can be started and stopped through the provided scripts.
 The API will be served on Port `8080` of the host.
 A simple UI will be served under `:8080/docs`.
 
-The **default credentials** are:
+The **default credentials** (set in `.env`) are:
 
 - User: `dogbert`
 - Password: `catbert`
