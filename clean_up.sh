@@ -7,6 +7,7 @@ source .env
 
 # remove images
 docker rmi $PROJECT_PREFIX-backend
+docker rmi $PROJECT_PREFIX-seeder
 docker rmi mongo:$MONGO_VERSION
 
 # remove database volume

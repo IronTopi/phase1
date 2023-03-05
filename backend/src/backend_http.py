@@ -54,7 +54,6 @@ def createItem(item: Item) -> Item:
 @app.put("/items/{itemId}")
 def updateItem(itemId: int, item: Item) -> Item:
     # TODO: allow partial input -> use http.PATCH
-    # TODO: shitty design, we need id in url but dont use it
     try:
         return ItemRepo.updateItem (item)
     

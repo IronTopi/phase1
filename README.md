@@ -25,9 +25,13 @@ If you're running this application on a linux host, you can use the provided con
 | `stop.sh`     | stops the services                                                  |
 | `clean_up.sh` | stops the services, removes images and persisted data from database |
 
+If you don't run this on linux, just take a look inside the scripts and execute the commands manually.
+
 ## Connecting
 
 The API will be served on Port `8080` of the host.
+All endpoints are located under the `/items/`-route.
+
 A simple documentation-UI will be served under `:8080/docs`.
 This does also provide the [openapi](https://www.openapis.org/)-style API-description (json-file).
 
@@ -74,6 +78,30 @@ The **seeder** and **backend**-services have their version defined in their resp
 MONGO_VERSION=6.0.4
 ```
 
+### Logs
+
+Logs are written to the `stdout` of the containers.
+**FastAPI** logs all http-requests.
+Errors from within the business layer are also logged (e.g. validation errors on malformed data).
+
+```
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:80 (Press CTRL+C to quit)
+ERROR:root:1 validation error for Item
+start_date
+  start_date '1114/13/2013' is not of format 'MM/DD/YYYY' (type=value_error)
+INFO:     192.168.0.80:59193 - "GET /items/ HTTP/1.1" 200 OK
+INFO:     192.168.0.80:59200 - "GET /items/100 HTTP/1.1" 200 OK
+INFO:     192.168.0.80:59206 - "PUT /items/100 HTTP/1.1" 200 OK
+INFO:     192.168.0.80:59209 - "DELETE /items/100 HTTP/1.1" 200 OK
+ERROR:root:1 validation error for Item
+start_date
+  start_date '1114/13/2013' is not of format 'MM/DD/YYYY' (type=value_error)
+INFO:     192.168.0.80:59314 - "GET /items/1 HTTP/1.1" 500 Internal Server Error
+```
+
 ### Testing
 
 Tests for the **backend**-service (mostly integration tests) are located in the folder `backend/src/test`.
@@ -102,3 +130,4 @@ The tests will pollute and modify the database!
 - API-Versioning (URL-versioning like `myapi/v1/`, see [FastAPI routers](https://fastapi.tiangolo.com/tutorial/bigger-applications/))
 - SSL, rate-limiting (maybe offload to API-Gateway like [Kong](https://konghq.com/))
 - Proper logging (larger systems implement log aggregation: let something like loki read your stdout/stderr and dump it into a centralized collection)
+- Providing up a dedicated test-database (database/collection or mock)

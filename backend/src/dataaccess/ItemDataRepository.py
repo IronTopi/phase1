@@ -56,7 +56,8 @@ class ItemDataRepository():
             item = Item.parse_obj (rawData)
 
         except ValidationError as ve:
-            raise
+            logging.error (str(ve))
+            raise ve
 
         except IDatabaseConnection.ItemNotFound as itemNotFound:
             raise ItemNotFound (str(itemNotFound)) from itemNotFound
