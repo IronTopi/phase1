@@ -1,8 +1,15 @@
+"""Data model for the domain data."""
+
 from pydantic import BaseModel, validator
 import re
 
 
-class Item (BaseModel):    
+class Item (BaseModel):
+    """Data model for the domain model.
+
+    Raises:
+        ValueError: Raw data does not conform the format/content requirements
+    """
     id: int = -1 # Server-generated  
     city: str # UTF-8!!!
     start_date: str # more like date, US-locale formatted

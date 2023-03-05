@@ -1,12 +1,15 @@
-from typing import List, Dict
+"""Provides domain-model layer access to persistence."""
+
+from typing import List
 import logging
 
-#from dataaccess.IDatabaseConnection import IDatabaseConnection, ItemNotFound
 import dataaccess.IDatabaseConnection as IDatabaseConnection
 from api.models.Item import Item
 from pydantic import ValidationError 
 
 class ItemDataRepository():
+    """Repository for domain-models of the type 'Item'.
+    """
     def __init__(self, databaseConnection: IDatabaseConnection.IDatabaseConnection):
         """Init this DataRepository.
 
@@ -66,23 +69,23 @@ class ItemDataRepository():
         """Inserts item into persistence.
 
         Args:
-            itemData (Dict): Item so save
+            itemData (Item): Item so save
         """        
         # Round-trip to get actual id (generated in database-connection)
         insertedData = self.DatabaseConnection.insertItem (itemData.dict())
         return Item.parse_obj (insertedData)
         
-    def updateItem (self, itemData: Item):
+    def updateItem (self, itemData: Item) -> Item:
         """Modifies item, uses field 'id' to identify the record to change in database.
 
         Args:
-            itemData (Item): New item-data.
+            itemData (Item): New item-data
 
         Raises:
             ItemNotFound: No item with the provided id ('itemData.id') found.
 
         Returns:
-            _type_: _description_
+            Item: New version of the item
         """
         try:
             newData = self.DatabaseConnection.updateItem (itemData.dict())
@@ -92,6 +95,14 @@ class ItemDataRepository():
             raise ItemNotFound (str(itemNotFound)) from itemNotFound
 
     def deleteItem (self, itemId: int):
+        """Deletes item with id 'itemId'
+
+        Args:
+            itemId (int): id of item to delete
+
+        Raises:
+            ItemNotFound: Item does not exist
+        """
         try:
             self.DatabaseConnection.deleteItem (itemId)
             

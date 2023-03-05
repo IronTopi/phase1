@@ -35,18 +35,19 @@ class MongoDatabaseConnection (IDatabaseConnection):
         if self.Collection.count_documents ({}) > 0:
             maxID = self.Collection.find_one({}, {"id": 1}, sort=[("id",-1)])["id"]
         
-
         return maxID
     
     def _getNextID (self) -> int:
+        """Returns next usable id.
+
+        Returns:
+            int: Next free id
+        """
         self._NextID += 1
         return self._NextID
 
 
     def getAllItems (self) -> List [Dict]:
-        """Returns all stored items.
-        (No pagination!)
-        """
         return self.Collection.find ({})
         
     def getItem (self, itemId: int):
@@ -79,8 +80,7 @@ class MongoDatabaseConnection (IDatabaseConnection):
 
         
 
-    def deleteItem (self, itemId: int):
-        # TODO: what should be returned?
+    def deleteItem (self, itemId: int):        
         numberMatches = self.Collection.count_documents ({"id": int (itemId)})
         if numberMatches == 0:
             raise ItemNotFound (f"item with id '{str(itemId)}' not found in database")
@@ -90,6 +90,8 @@ class MongoDatabaseConnection (IDatabaseConnection):
 
 
 class MongoConnectionConfig (BaseModel):
+    """Connection data required for a MongoDB
+    """
     IP: str
     Port: int
     User: str
