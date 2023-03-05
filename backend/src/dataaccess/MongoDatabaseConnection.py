@@ -28,15 +28,13 @@ class MongoDatabaseConnection (IDatabaseConnection):
         """Finds the max value of the already existing ids in the collection.
 
         Returns:
-            int: Highest existing ID (or 0, if there are no ids yet)
-        """
-        try:
+            int: Highest existing ID (or 0, if there are no items in the database yet)
+        """        
+        maxID = 0
+
+        if self.Collection.count_documents ({}) > 0:
             maxID = self.Collection.find_one({}, {"id": 1}, sort=[("id",-1)])["id"]
         
-        except Exception as ex:
-            # TODO: except only specific exception-type
-            print (ex)
-            maxID = 0
 
         return maxID
     
@@ -62,20 +60,22 @@ class MongoDatabaseConnection (IDatabaseConnection):
 
 
 
-    def insertItem (self, item: Dict):
+    def insertItem (self, itemData: Dict):        
         # generate ID
-        item ["id"] = self._getNextID()
+        itemData ["id"] = self._getNextID()
 
         # TODO: check if succeeded
-        self.Collection.insert_one (item)
+        result = self.Collection.insert_one (itemData)
 
-        return item
+        return itemData
     
-    def updateItem (self, d: Dict):
-        result = self.Collection.update_one ({"id": d["id"]}, {"$set": d})
+    def updateItem (self, itemData: Dict) -> Dict:
+        result = self.Collection.update_one ({"id": itemData["id"]}, {"$set": itemData})
 
         if result.matched_count != 1:
-            raise ItemNotFound ((f"item with id '{str( d['id'])}' not found in database"))
+            raise ItemNotFound ((f"item with id '{str( itemData['id'])}' not found in database"))
+
+        return itemData
 
         
 

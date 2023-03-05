@@ -22,7 +22,7 @@ def validateCredentials (credentials: HTTPBasicCredentials = Depends(security)):
     passwordOK = secrets.compare_digest(inputPassword, storedPassword)
 
     if usernameOK and passwordOK:
-        return credentials
+        return True
 
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                         detail="Invalid credentials",

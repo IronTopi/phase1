@@ -1,7 +1,6 @@
 from typing import List
 import os
-
-
+import logging
 
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -33,7 +32,7 @@ def getAllItems() -> List[Item]:
 
 
 @app.get("/items/{itemId}")
-def read_item(
+def readItem(
     itemId: int
 ):
     try:
@@ -54,9 +53,8 @@ def createItem(item: Item) -> Item:
 
 @app.put("/items/{itemId}")
 def updateItem(itemId: int, item: Item) -> Item:
-    # TODO: allow partial input?
+    # TODO: allow partial input -> use http.PATCH
     # TODO: shitty design, we need id in url but dont use it
-    # -> Best practice?!?!?
     try:
         return ItemRepo.updateItem (item)
     
@@ -104,7 +102,7 @@ def setupMongoConnection():
         return MongoDatabaseConnection(connectionConfig)
 
     except KeyError as ke:
-        print(
+        logging.fatal(
             f"ERROR - Database Connection - no valid configuration provided: missing env-var {str(ke)}"
         )
         exit(1)

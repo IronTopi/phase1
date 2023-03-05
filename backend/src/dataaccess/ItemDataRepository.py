@@ -1,4 +1,5 @@
 from typing import List, Dict
+import logging
 
 #from dataaccess.IDatabaseConnection import IDatabaseConnection, ItemNotFound
 import dataaccess.IDatabaseConnection as IDatabaseConnection
@@ -7,62 +8,85 @@ from pydantic import ValidationError
 
 class ItemDataRepository():
     def __init__(self, databaseConnection: IDatabaseConnection.IDatabaseConnection):
+        """Init this DataRepository.
+
+        Args:
+            databaseConnection (IDatabaseConnection.IDatabaseConnection): Database connection to use
+        """
         self.DatabaseConnection = databaseConnection
         
 
     def getAllItems (self) -> List[Item]:
+        """Returns list of all items.
+        
+        Returns:
+            List[Item]: All items
+        """
         rawItems = self.DatabaseConnection.getAllItems()
         items = []
 
         for item in rawItems:
             # Fill the list as best as we can!
             try:
-                print (item)
                 items.append (Item.parse_obj (item))
             
             except Exception as ex:
-                # TODO: simple logging
-                print (ex)
+                logging.error (str(ex))
         
         return items
 
     def getItem (self, itemId: int) -> Item:
+        """Returns item identified by 'itemId'.
+
+        Args:
+            itemId (int): Id of the item to receive
+
+        Raises:
+            ValidationError: Malformed data in persistence layer
+            ItemNotFound: No item with id 'itemId' found
+
+        Returns:
+            Item: Item with id 'itemId'
+        """
         try:
             rawData = self.DatabaseConnection.getItem (itemId)
             item = Item.parse_obj (rawData)
 
         except ValidationError as ve:
-            raise ve
+            raise
 
         except IDatabaseConnection.ItemNotFound as itemNotFound:
             raise ItemNotFound (str(itemNotFound)) from itemNotFound
 
-        
         return item
 
 
 
     def insertItem (self, itemData: Item):
-        """_summary_
+        """Inserts item into persistence.
 
         Args:
-            itemData (Dict): _description_
-        """
-        # TODO: Document exception that might occur on this level
-        # validation of input-data should take place WHERE?
-        # Here or here + in http-layer?
-
-
-        
-        # TODO: error-handling
-        # ID will be generated in persistence layer
+            itemData (Dict): Item so save
+        """        
+        # Round-trip to get actual id (generated in database-connection)
         insertedData = self.DatabaseConnection.insertItem (itemData.dict())
         return Item.parse_obj (insertedData)
         
     def updateItem (self, itemData: Item):
+        """Modifies item, uses field 'id' to identify the record to change in database.
+
+        Args:
+            itemData (Item): New item-data.
+
+        Raises:
+            ItemNotFound: No item with the provided id ('itemData.id') found.
+
+        Returns:
+            _type_: _description_
+        """
         try:
-            self.DatabaseConnection.updateItem (itemData.dict())
-            return itemData
+            newData = self.DatabaseConnection.updateItem (itemData.dict())
+            return Item.parse_obj(newData)
         
         except IDatabaseConnection.ItemNotFound as itemNotFound:
             raise ItemNotFound (str(itemNotFound)) from itemNotFound

@@ -55,8 +55,8 @@
   // Uncomment the next line if you want to keep your containers running after VS Code shuts down.
   "shutdownAction": "none",
 
-  // Uncomment the next line to run commands after the container is created.
-  "postCreateCommand": "pip install pylint black"
+  // Packages only required for development:
+  "postCreateCommand": "pip install pylint black pytest httpx"
 
   // Configure tool-specific properties.
 

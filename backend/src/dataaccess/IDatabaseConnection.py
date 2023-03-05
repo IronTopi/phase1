@@ -34,7 +34,7 @@ class IDatabaseConnection (ABC):
         pass
 
     @abstractmethod
-    def updateItem (self, itemData: Dict):
+    def updateItem (self, itemData: Dict) -> Dict:
         pass
 
 
