@@ -1,16 +1,110 @@
-from typing import Union
+from typing import List
+import os
 
-from fastapi import FastAPI, Depends
+
+
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
-app = FastAPI()
-security = HTTPBasic()
+# TODO: move all domain-level validation out of the http-layer?
+# Introduce Domain-Exceptions ouside?
+from pydantic import ValidationError
 
-@app.get("/")
-def read_root():
-    return {"Hello": "u dude"}
+from auth import validateCredentials
+
+# DB-connection modules, might want to move the whole topic
+from dataaccess.ItemDataRepository import ItemDataRepository, ItemNotFound
+from dataaccess.MongoDatabaseConnection import (
+    MongoDatabaseConnection,
+    MongoConnectionConfig,
+)
+
+from api.models.Item import Item
+
+app = FastAPI(dependencies=[Depends (validateCredentials)])
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None, credentials: HTTPBasicCredentials = Depends(security)):
-    return {"item_id": item_id, "q": q}
+ItemRepo: ItemDataRepository
+
+
+@app.get("/items/")
+def getAllItems() -> List[Item]:
+    return ItemRepo.getAllItems()
+
+
+@app.get("/items/{itemId}")
+def read_item(
+    itemId: int
+):
+    try:
+        return ItemRepo.getItem (itemId)
+
+    except ValidationError as ve:
+        raise HTTPException (status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str (ve)) from ve
+
+    except ItemNotFound as itemNotFound:
+        raise HTTPException (status.HTTP_404_NOT_FOUND, detail=str (itemNotFound)) from itemNotFound
+
+
+
+@app.post("/items/")
+def createItem(item: Item) -> Item:
+    return ItemRepo.insertItem (item)
+
+
+@app.put("/items/{itemId}")
+def updateItem(itemId: int, item: Item) -> Item:
+    # TODO: allow partial input?
+    # TODO: shitty design, we need id in url but dont use it
+    # -> Best practice?!?!?
+    try:
+        return ItemRepo.updateItem (item)
+    
+    except ItemNotFound as itemNotFound:
+        raise HTTPException (status.HTTP_404_NOT_FOUND, detail=str (itemNotFound)) from itemNotFound
+
+
+@app.delete("/items/{itemId}")
+def deleteItem(itemId: int):
+    try:
+        ItemRepo.deleteItem (itemId)
+    
+    except ItemNotFound as itemNotFound:
+        raise HTTPException (status.HTTP_404_NOT_FOUND, detail=str (itemNotFound)) from itemNotFound
+    
+
+
+
+
+
+##########
+# Orchestration
+# Set up underlying layers
+@app.on_event("startup")
+async def startup():
+    # Setup Item-repo
+    global ItemRepo
+
+    dbConnection = setupMongoConnection()
+    ItemRepo = ItemDataRepository(dbConnection)
+
+
+def setupMongoConnection():
+    try:
+        # Get connection info using env-vars
+        connectionConfig = MongoConnectionConfig(
+            IP=os.environ["MONGO_IP"],
+            Port=os.environ["MONGO_PORT"],
+            User=os.environ["MONGO_USER"],
+            Password=os.environ["MONGO_PASSWORD"],
+            Database=os.environ["MONGO_DB"],
+            Collection=os.environ["MONGO_COLLECTION"],
+        )
+
+        return MongoDatabaseConnection(connectionConfig)
+
+    except KeyError as ke:
+        print(
+            f"ERROR - Database Connection - no valid configuration provided: missing env-var {str(ke)}"
+        )
+        exit(1)

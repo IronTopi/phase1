@@ -25,7 +25,7 @@ The whole application can be started and stopped through the provided scripts.
 The API will be served on Port `8080` of the host.
 A simple UI will be served under `:8080/docs`.
 
-The **default credentials** are:
+The **default credentials** (set in `.env`) are:
 
 - User: `dogbert`
 - Password: `catbert`
@@ -38,9 +38,10 @@ TODO: Format as table
 {"id":59,"city":"Diwopu","start_date":"2/20/2015","end_date":"12/12/2014","price":"81.90","status":"Daily","color":"#08c51b"}
 ```
 
-## Techstack
+## Development and Tech
 
 - http-API: [FastAPI](https://fastapi.tiangolo.com/)
+- Data validation: [Pydantic](https://docs.pydantic.dev/)
 - Database: [MongoDB](https://www.mongodb.com/)
 - Containerization: 🐳 [docker](https://www.docker.com/)
 
@@ -48,14 +49,15 @@ TODO: small architecture diagram
 
 ### Versions
 
-The versions of FastAPI and MongoDB can are pinned in the `.env` file.
+The version of the MongoDB can is pinned in the `.env` file.
+The **seeder** and **backend**-services have their version defined in their respective `Dockerfile`s.
 
 ``` [.env]
-PROJECT_PREFIX=phase1
 MONGO_VERSION=6.0.4
 ```
 
 ## Things that have not been done
 
 - API-Versioning (maybe URL-versioning like `myapi/v1/`, see [FastAPI routers](https://fastapi.tiangolo.com/tutorial/bigger-applications/))
-- SSL (maybe offload to API-Gateway like [Kong](https://konghq.com/))
+- SSL, rate-limiting (maybe offload to API-Gateway like [Kong](https://konghq.com/))
+- Proper logging (maybe use vanilla python logger, for larger systems implement log aggregation: let something like loki read your stdout/stderr)

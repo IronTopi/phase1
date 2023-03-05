@@ -1,5 +1,9 @@
 # Major TODOs
 
+## Concept
+
+- [ ] Clear up domain: are the data best interpreted as being cities? -> Rename to `Items`
+- [ ] Centralized Exceptions (ItemNotFound)
 ## Dev-Setup
 
 - [ ] devcontainer with hot reload for FastAPI

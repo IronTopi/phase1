@@ -1,7 +1,92 @@
+from typing import Dict, List, Any
+
 from pydantic import BaseModel
-from dataaccess.IDatabaseConnection import IDatabaseConnection
+from pymongo import MongoClient
+from dataaccess.IDatabaseConnection import IDatabaseConnection, ItemNotFound
+
 
 class MongoDatabaseConnection (IDatabaseConnection):
+    def __init__ (self, connectionData: Dict [str, Any]):
+        """Connects this instance to the database configured in `connectionData`.
+
+        Args:
+            connectionData (Dict[str, Any]): Connection config (connection string), shape depends on specific database
+        """
+        mongoConnectionData = MongoConnectionConfig.parse_obj (connectionData)
+
+        self.Client = MongoClient (host=mongoConnectionData.IP, port=mongoConnectionData.Port,username=mongoConnectionData.User, password=mongoConnectionData.Password )
+
+        self.DB = self.Client [mongoConnectionData.Database]
+        self.Collection = self.DB[mongoConnectionData.Collection]
+        
+        self._NextID = self._getMaxID ()
+
+    
+
+
+    def _getMaxID (self) -> int:
+        """Finds the max value of the already existing ids in the collection.
+
+        Returns:
+            int: Highest existing ID (or 0, if there are no ids yet)
+        """
+        try:
+            maxID = self.Collection.find_one({}, {"id": 1}, sort=[("id",-1)])["id"]
+        
+        except Exception as ex:
+            # TODO: except only specific exception-type
+            print (ex)
+            maxID = 0
+
+        return maxID
+    
+    def _getNextID (self) -> int:
+        self._NextID += 1
+        return self._NextID
+
+
+    def getAllItems (self) -> List [Dict]:
+        """Returns all stored items.
+        (No pagination!)
+        """
+        return self.Collection.find ({})
+        
+    def getItem (self, itemId: int):
+        itemData = self.Collection.find_one ({"id": itemId})
+
+        if not itemData:
+            raise ItemNotFound (f"item with id '{str(itemId)}' not found in database")
+
+        # TODO: generic "not found"-exception
+        return itemData
+
+
+
+    def insertItem (self, item: Dict):
+        # generate ID
+        item ["id"] = self._getNextID()
+
+        # TODO: check if succeeded
+        self.Collection.insert_one (item)
+
+        return item
+    
+    def updateItem (self, d: Dict):
+        result = self.Collection.update_one ({"id": d["id"]}, {"$set": d})
+
+        if result.matched_count != 1:
+            raise ItemNotFound ((f"item with id '{str( d['id'])}' not found in database"))
+
+        
+
+    def deleteItem (self, itemId: int):
+        # TODO: what should be returned?
+        numberMatches = self.Collection.count_documents ({"id": int (itemId)})
+        if numberMatches == 0:
+            raise ItemNotFound (f"item with id '{str(itemId)}' not found in database")
+            
+        self.Collection.delete_one ({"id": int (itemId)})
+
 
 
 class MongoConnectionConfig (BaseModel):

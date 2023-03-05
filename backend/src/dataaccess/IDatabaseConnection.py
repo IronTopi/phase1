@@ -1,7 +1,9 @@
-from typing import Any, List
-from abc import ABC
+"""Interface to the persistence layer.
+Sends/Receives data in a generic structure (Dict) to the upper (domain) level."""
+from typing import Any, List, Dict
+from abc import ABC, abstractmethod
 
-import api.models.City
+
 
 class IDatabaseConnection (ABC):
     def __init__ (self, connectionData: Dict [str, Any]):
@@ -10,17 +12,35 @@ class IDatabaseConnection (ABC):
         Args:
             connectionData (Dict[str, Any]): Connection config (connection string), shape depends on specific database
         """
+        pass
 
-    def getAllCities (self) -> List [City]:
-        """Returns all stored cities.
+    @abstractmethod
+    def getAllItems (self) -> List [Dict]:
+        """Returns all stored items.
         (No pagination!)
 
         Returns:
-            List [City]: All cities as full models (not only id)
+            List [Item]: All items as full models (not only id)
         """
+        pass
+    
+    @abstractmethod
+    def getItem (self, id: int) -> Dict:
+        pass
 
-    def updateCity (self, city: City):
 
-    def insertCity (self, city: City):
+    @abstractmethod
+    def insertItem (self, itemData: Dict):
+        pass
 
-    def deleteCity (self, city: City):
+    @abstractmethod
+    def updateItem (self, itemData: Dict):
+        pass
+
+
+    @abstractmethod
+    def deleteItem (self, id: int):
+        pass
+
+class ItemNotFound (Exception):
+    pass

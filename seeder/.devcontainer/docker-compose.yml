@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  # Update this to the name of the service you want to work with in your docker-compose.yml file
+  seeder:
+    # Uncomment if you want to override the service's Dockerfile to one in the .devcontainer 
+    # folder. Note that the path of the Dockerfile and context is relative to the *primary* 
+    # docker-compose.yml file (the first in the devcontainer.json "dockerComposeFile"
+    # array). The sample below assumes your primary file is in the root of your project.
+    #
+    # build:
+    #   context: .
+    #   dockerfile: .devcontainer/Dockerfile
+
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
+
+    #volumes:
+      # Update this to wherever you want VS Code to mount the folder of your project
+      #- ..:/workspaces:cached
+
+    # start script to check and seed the db if necessary    
+    command: ["sh", "-c", "pip install debugpy -t /tmp && python /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678"]
+    # command: ["echo", "hey dude"]
+ 

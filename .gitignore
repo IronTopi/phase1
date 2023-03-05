@@ -1,3 +1,6 @@
+# Seeding-data file that gets mounted in the seeding-app-folder
+seeder/src/data.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
