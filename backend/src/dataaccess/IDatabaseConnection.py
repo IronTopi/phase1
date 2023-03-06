@@ -1,5 +1,5 @@
 """Interface to the persistence layer.
-Exchanges data withe the upper (domain) level data in a generic structure (Dict)."""
+Exchanges data with the the upper (domain) level in a generic structure (Dict)."""
 
 from typing import Any, List, Dict
 from abc import ABC, abstractmethod

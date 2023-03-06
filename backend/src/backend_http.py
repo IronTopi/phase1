@@ -1,3 +1,6 @@
+"""Entry-point for the whole application.
+
+Does some orchestration (dependencies) and runs the http-backend."""
 from typing import List
 import os
 import logging
@@ -20,21 +23,44 @@ from dataaccess.MongoDatabaseConnection import (
 
 from api.models.Item import Item
 
-app = FastAPI(dependencies=[Depends (validateCredentials)])
+DESCRIPTION="""
+A simple CRUD-API.
+"""
+
+app = FastAPI(title="phase1 - mini-crud", description=DESCRIPTION,dependencies=[Depends (validateCredentials)])
 
 
 ItemRepo: ItemDataRepository
 
 
 @app.get("/items/")
-def getAllItems() -> List[Item]:
+async def getAllItems() -> List[Item]:
+    """Lists all items.
+    Returns complete items (not just ids).
+    Does not do pagination.
+
+    Returns:
+        List[Item]: List of all items
+    """
     return ItemRepo.getAllItems()
 
 
 @app.get("/items/{itemId}")
-def readItem(
+async def readItem(
     itemId: int
 ):
+    """Returns the specified item
+
+    Args:
+        itemId (int): Id of the item to retrieve
+
+    Raises:
+        HTTPException: 400 if the item can not be found
+        HTTPException: 500 if the item could be found but the data is invalid
+
+    Returns:
+        Item: The requested item
+    """
     try:
         return ItemRepo.getItem (itemId)
 
@@ -47,13 +73,38 @@ def readItem(
 
 
 @app.post("/items/")
-def createItem(item: Item) -> Item:
+async def createItem(item: Item) -> Item:
+    """Inserts a new item.
+
+    Args:
+        item (Item): Item to insert. Incoming item-id will be disregarded, actual id will be generated serverside.
+
+    Returns:
+        Item: The newly created item (including the actual id)
+    """
     return ItemRepo.insertItem (item)
 
 
 @app.put("/items/{itemId}")
-def updateItem(itemId: int, item: Item) -> Item:
+async def updateItem(itemId: int, item: Item) -> Item:
+    """Updates the provided item
+
+    Args:
+        itemId (int): Id of the item to modify
+        item (Item): New item data. Id cannot be changed
+
+    Raises:
+        HTTPException: 400 if the request tries to change the id (different id in URL and payload)
+        HTTPException: 404 if the specified item does not exist
+
+    Returns:
+        Item: The modified item
+    """
     # TODO: allow partial input -> use http.PATCH
+    # Basic sanity check: do the itemIds in the route and the data match?
+    if itemId != item.id:
+        raise HTTPException (status.HTTP_400_BAD_REQUEST, detail=f"item-id mismatch between route and payload")
+
     try:
         return ItemRepo.updateItem (item)
     
@@ -62,7 +113,15 @@ def updateItem(itemId: int, item: Item) -> Item:
 
 
 @app.delete("/items/{itemId}")
-def deleteItem(itemId: int):
+asnyc def deleteItem(itemId: int):
+    """Deletes the specified item
+
+    Args:
+        itemId (int): Id of the item to delete
+
+    Raises:
+        HTTPException: 404 if the specified item does not exist
+    """
     try:
         ItemRepo.deleteItem (itemId)
     
@@ -77,11 +136,13 @@ def deleteItem(itemId: int):
 ##########
 # Orchestration
 # Set up underlying layers
+
 @app.on_event("startup")
 async def startup():
     # Setup Item-repo
     global ItemRepo
 
+    # dependency injection
     dbConnection = setupMongoConnection()
     ItemRepo = ItemDataRepository(dbConnection)
 

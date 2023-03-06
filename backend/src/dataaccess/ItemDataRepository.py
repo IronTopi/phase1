@@ -1,4 +1,15 @@
-"""Provides domain-model layer access to persistence."""
+"""Accepts and delivers domain models in and out of persistence.
+
+Is _not_ designed as an interface!
+(But might be, could be useful to do a more isolated unit-test on the API)
+We can still provide mock-datasources for testing because the 'databaseConnection' this
+repo uses is designed as an interface.
+
+The connection to the actual persistence layer uses an interface (IDatabaseConnection).
+The repository and the actual database connection are not integrated into one single unit
+to allow for domain entities to have their data split into multiple data-stores on the persistence layer.
+The repository would then assemble the whole aggregate, do hydration-work etc.
+"""
 
 from typing import List
 import logging
@@ -21,6 +32,8 @@ class ItemDataRepository():
 
     def getAllItems (self) -> List[Item]:
         """Returns list of all items.
+        Any items that could not be loaded (-> validation error) are logged
+        but not contained in the result.
         
         Returns:
             List[Item]: All items

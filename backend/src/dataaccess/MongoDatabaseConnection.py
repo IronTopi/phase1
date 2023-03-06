@@ -1,3 +1,4 @@
+"""Implementation of the IDatabaseConnection interface for access to a MongoDB-instance."""
 from typing import Dict, List, Any
 
 from pydantic import BaseModel
@@ -6,6 +7,8 @@ from dataaccess.IDatabaseConnection import IDatabaseConnection, ItemNotFound
 
 
 class MongoDatabaseConnection (IDatabaseConnection):
+    """Implementation of the IDatabaseConnection interface for access to a MongoDB-instance.
+    """
     def __init__ (self, connectionData: Dict [str, Any]):
         """Connects this instance to the database configured in `connectionData`.
 
@@ -90,7 +93,7 @@ class MongoDatabaseConnection (IDatabaseConnection):
 
 
 class MongoConnectionConfig (BaseModel):
-    """Connection data required for a MongoDB
+    """Connection data required for a MongoDB.
     """
     IP: str
     Port: int

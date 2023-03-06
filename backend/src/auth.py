@@ -1,3 +1,5 @@
+"""Minimalist authentication to be used by FastAPI"""
+
 import os
 import secrets
 
@@ -10,6 +12,18 @@ security = HTTPBasic()
 ##########
 # "Security"
 def validateCredentials (credentials: HTTPBasicCredentials = Depends(security)):
+    """Validates the provided BasicAuth-credentials.
+    Can be used on any FastAPI-route via Depends.
+
+    Args:
+        credentials (HTTPBasicCredentials, optional): BasicAuth credentials. Defaults to Depends(security) (handeled by FastPI-magic).
+
+    Raises:
+        HTTPException: 401 unauthorized, raised if credentials are not valid
+
+    Returns:
+        bool: True, if credentials are valid
+    """
     # Encode the credentials to compare
     inputUsername = credentials.username.encode("utf-8")
     inputPassword = credentials.password.encode("utf-8")

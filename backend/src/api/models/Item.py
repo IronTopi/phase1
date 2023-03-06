@@ -22,7 +22,7 @@ class Item (BaseModel):
         pattern = re.compile (r"^(\d{1,2}/\d{1,2}/\d+)$")
         if pattern.match (date):
             # TODO: check if month/day makes sense
-            # OR JUST DON'T HANDLE DATES AS STRINGS!!!
+            # OR JUST DON'T HANDLE DATES AS STRINGS IN THE BACKEND!!!
             return True
         
         return False
@@ -36,6 +36,8 @@ class Item (BaseModel):
         
     @validator("end_date")
     def end_date_UsFormat(cls, end_date):
+        # TODO: check if end_date is after start_date
+        # but see 'isValidUsDateFormat'...
         if Item.isValidUsDateFormat (end_date):
             return end_date
         else:
