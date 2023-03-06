@@ -32,7 +32,7 @@ If you don't run this on linux, just take a look inside the scripts and execute 
 The API will be served on Port `8080` of the host.
 All endpoints are located under the `/items/`-route.
 
-A simple documentation-UI will be served under `:8080/docs`.
+A detailed interactive documentation-UI for the API will be served under `:8080/docs`.
 This does also provide the [openapi](https://www.openapis.org/)-style API-description (json-file).
 
 The **default credentials** (set in `.env`) are:
@@ -126,4 +126,4 @@ The tests will pollute and modify the database!
 - API-Versioning (URL-versioning like `myapi/v1/`, see [FastAPI routers](https://fastapi.tiangolo.com/tutorial/bigger-applications/))
 - SSL, rate-limiting (maybe offload to API-Gateway like [Kong](https://konghq.com/))
 - Proper logging (larger systems implement log aggregation: let something like loki read your stdout/stderr and dump it into a centralized collection)
-- Providing up a dedicated test-database (database/collection or mock)
+- Providing a dedicated test-database (database/collection or mock)
