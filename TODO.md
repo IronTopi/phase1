@@ -12,3 +12,4 @@
 ## Quality/Robustness
 
 - [ ] static typechecking (mypy)
+- [ ] display unit test code coverage

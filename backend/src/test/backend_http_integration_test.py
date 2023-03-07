@@ -12,11 +12,36 @@ from auth import validateCredentials
 from backend_http import app
 
 
+def buildGoodItemJson ():
+    return {"id": -1, 
+              "city": "ankh morpork", 
+              "start_date": "1/3/1999",
+              "end_date": "1/12/2020",
+              "price": "13.37",
+              "status": "Daily",
+              "color": "#Aa1234"}
+
+
 @pytest.fixture()
 def client ():
+    # Route test-data into different database
+
+
+    # Disable security in FastAPI
     app.dependency_overrides [validateCredentials] = lambda: True
     with TestClient (app) as _client:
         yield _client
+
+@pytest.fixture()
+def fillDatabase ( client: TestClient):    
+    # Populate database
+    for i in range (100):
+        client.post(
+        "/items/",
+        json=buildGoodItemJson()
+    )
+
+
 
 
 def test_getAllItems (client: TestClient):
@@ -30,7 +55,7 @@ def test_getItem_Good (client: TestClient):
     # Select one random item
     allItems = response.json()
 
-    # Assume we have some entries. Might add those in a fixture.
+
     item = random.choice (allItems)
     response = client.get (f"/items/{item['id']}")
     assert response.status_code == 200
