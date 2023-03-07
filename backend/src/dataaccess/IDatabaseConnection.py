@@ -5,9 +5,8 @@ from typing import Any, List, Dict
 from abc import ABC, abstractmethod
 
 
-
-class IDatabaseConnection (ABC):
-    def __init__ (self, connectionData: Dict [str, Any]):
+class IDatabaseConnection(ABC):
+    def __init__(self, connectionData: Dict[str, Any]):
         """Connects this instance to the database configured in `connectionData`.
 
         Args:
@@ -16,7 +15,7 @@ class IDatabaseConnection (ABC):
         pass
 
     @abstractmethod
-    def getAllItems (self) -> List [Dict]:
+    def getAllItems(self) -> List[Dict]:
         """Returns all stored items.
         (No pagination!)
 
@@ -24,9 +23,9 @@ class IDatabaseConnection (ABC):
             List [Item]: All items as full models (not only id)
         """
         pass
-    
+
     @abstractmethod
-    def getItem (self, itemId: int) -> Dict:
+    def getItem(self, itemId: int) -> Dict:
         """Returns specified item.
 
         Args:
@@ -37,9 +36,8 @@ class IDatabaseConnection (ABC):
         """
         pass
 
-
     @abstractmethod
-    def insertItem (self, itemData: Dict):
+    def insertItem(self, itemData: Dict):
         """Inserts item.
 
         Args:
@@ -48,7 +46,7 @@ class IDatabaseConnection (ABC):
         pass
 
     @abstractmethod
-    def updateItem (self, itemData: Dict) -> Dict:
+    def updateItem(self, itemData: Dict) -> Dict:
         """Updates specified item.
 
         Args:
@@ -59,9 +57,8 @@ class IDatabaseConnection (ABC):
         """
         pass
 
-
     @abstractmethod
-    def deleteItem (self, itemId: int):
+    def deleteItem(self, itemId: int):
         """Removes specified item.
 
         Args:
@@ -69,8 +66,9 @@ class IDatabaseConnection (ABC):
         """
         pass
 
+
 # TODO: move to api.Errors
-class ItemNotFound (Exception):
-    """Specified item does not exist.
-    """
+class ItemNotFound(Exception):
+    """Specified item does not exist."""
+
     pass

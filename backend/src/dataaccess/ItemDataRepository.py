@@ -16,11 +16,12 @@ import logging
 
 import dataaccess.IDatabaseConnection as IDatabaseConnection
 from api.models.Item import Item
-from pydantic import ValidationError 
+from pydantic import ValidationError
 
-class ItemDataRepository():
-    """Repository for domain-models of the type 'Item'.
-    """
+
+class ItemDataRepository:
+    """Repository for domain-models of the type 'Item'."""
+
     def __init__(self, databaseConnection: IDatabaseConnection.IDatabaseConnection):
         """Init this DataRepository.
 
@@ -28,13 +29,12 @@ class ItemDataRepository():
             databaseConnection (IDatabaseConnection.IDatabaseConnection): Database connection to use
         """
         self.DatabaseConnection = databaseConnection
-        
 
-    def getAllItems (self) -> List[Item]:
+    def getAllItems(self) -> List[Item]:
         """Returns list of all items.
         Any items that could not be loaded (-> validation error) are logged
         but not contained in the result.
-        
+
         Returns:
             List[Item]: All items
         """
@@ -44,14 +44,14 @@ class ItemDataRepository():
         for item in rawItems:
             # Fill the list as best as we can!
             try:
-                items.append (Item.parse_obj (item))
-            
+                items.append(Item.parse_obj(item))
+
             except Exception as ex:
-                logging.error (str(ex))
-        
+                logging.error(str(ex))
+
         return items
 
-    def getItem (self, itemId: int) -> Item:
+    def getItem(self, itemId: int) -> Item:
         """Returns item identified by 'itemId'.
 
         Args:
@@ -65,31 +65,29 @@ class ItemDataRepository():
             Item: Item with id 'itemId'
         """
         try:
-            rawData = self.DatabaseConnection.getItem (itemId)
-            item = Item.parse_obj (rawData)
+            rawData = self.DatabaseConnection.getItem(itemId)
+            item = Item.parse_obj(rawData)
 
         except ValidationError as ve:
-            logging.error (str(ve))
+            logging.error(str(ve))
             raise ve
 
         except IDatabaseConnection.ItemNotFound as itemNotFound:
-            raise ItemNotFound (str(itemNotFound)) from itemNotFound
+            raise ItemNotFound(str(itemNotFound)) from itemNotFound
 
         return item
 
-
-
-    def insertItem (self, itemData: Item):
+    def insertItem(self, itemData: Item):
         """Inserts item into persistence.
 
         Args:
             itemData (Item): Item so save
-        """        
+        """
         # Round-trip to get actual id (generated in database-connection)
-        insertedData = self.DatabaseConnection.insertItem (itemData.dict())
-        return Item.parse_obj (insertedData)
-        
-    def updateItem (self, itemData: Item) -> Item:
+        insertedData = self.DatabaseConnection.insertItem(itemData.dict())
+        return Item.parse_obj(insertedData)
+
+    def updateItem(self, itemData: Item) -> Item:
         """Modifies item, uses field 'id' to identify the record to change in database.
 
         Args:
@@ -102,13 +100,13 @@ class ItemDataRepository():
             Item: New version of the item
         """
         try:
-            newData = self.DatabaseConnection.updateItem (itemData.dict())
+            newData = self.DatabaseConnection.updateItem(itemData.dict())
             return Item.parse_obj(newData)
-        
-        except IDatabaseConnection.ItemNotFound as itemNotFound:
-            raise ItemNotFound (str(itemNotFound)) from itemNotFound
 
-    def deleteItem (self, itemId: int):
+        except IDatabaseConnection.ItemNotFound as itemNotFound:
+            raise ItemNotFound(str(itemNotFound)) from itemNotFound
+
+    def deleteItem(self, itemId: int):
         """Deletes item with id 'itemId'
 
         Args:
@@ -118,11 +116,11 @@ class ItemDataRepository():
             ItemNotFound: Item does not exist
         """
         try:
-            self.DatabaseConnection.deleteItem (itemId)
-            
+            self.DatabaseConnection.deleteItem(itemId)
+
         except IDatabaseConnection.ItemNotFound as itemNotFound:
-            raise ItemNotFound (str(itemNotFound)) from itemNotFound
+            raise ItemNotFound(str(itemNotFound)) from itemNotFound
 
 
-class ItemNotFound (Exception):
+class ItemNotFound(Exception):
     pass

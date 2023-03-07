@@ -11,7 +11,7 @@ security = HTTPBasic()
 
 ##########
 # "Security"
-def validateCredentials (credentials: HTTPBasicCredentials = Depends(security)):
+def validateCredentials(credentials: HTTPBasicCredentials = Depends(security)):
     """Validates the provided BasicAuth-credentials.
     Can be used on any FastAPI-route via Depends.
 
@@ -29,8 +29,8 @@ def validateCredentials (credentials: HTTPBasicCredentials = Depends(security)):
     inputPassword = credentials.password.encode("utf-8")
 
     # Careless plaintext
-    storedUsername = os.environ["API_USER"].encode ("utf-8")
-    storedPassword = os.environ["API_PASSWORD"].encode ("utf-8")
+    storedUsername = os.environ["API_USER"].encode("utf-8")
+    storedPassword = os.environ["API_PASSWORD"].encode("utf-8")
 
     usernameOK = secrets.compare_digest(inputUsername, storedUsername)
     passwordOK = secrets.compare_digest(inputPassword, storedPassword)
@@ -38,6 +38,6 @@ def validateCredentials (credentials: HTTPBasicCredentials = Depends(security)):
     if usernameOK and passwordOK:
         return True
 
-    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                        detail="Invalid credentials",
-                        headers={"WWW-Authenticate": "Basic"})
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials", headers={"WWW-Authenticate": "Basic"}
+    )

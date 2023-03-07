@@ -8,13 +8,12 @@ services:
     # array). The sample below assumes your primary file is in the root of your project.
     #
     # build:
-    #   context: .
-    #   dockerfile: .devcontainer/Dockerfile
+    # context: .
+    # dockerfile: Dockerfile
 
     volumes:
       # Update this to wherever you want VS Code to mount the folder of your project
       - ..:/workspaces:cached
-      - ../../pylintrc:/app/pylintrc:ro
 
     # start uvicorn with hot reload
     #command: uvicorn backend_http:app --host 0.0.0.0 --port 80 --reload

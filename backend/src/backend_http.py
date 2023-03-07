@@ -23,11 +23,11 @@ from dataaccess.MongoDatabaseConnection import (
 
 from api.models.Item import Item
 
-DESCRIPTION="""
+DESCRIPTION = """
 A simple CRUD-API.
 """
 
-app = FastAPI(title="phase1 - mini-crud", description=DESCRIPTION,dependencies=[Depends (validateCredentials)])
+app = FastAPI(title="phase1 - mini-crud", description=DESCRIPTION, dependencies=[Depends(validateCredentials)])
 
 
 ItemRepo: ItemDataRepository
@@ -46,30 +46,27 @@ async def getAllItems() -> List[Item]:
 
 
 @app.get("/items/{itemId}")
-async def readItem(
-    itemId: int
-):
+async def readItem(itemId: int):
     """Returns the specified item
 
     Args:
         itemId (int): Id of the item to retrieve
 
     Raises:
-        HTTPException: 400 if the item can not be found
+        HTTPException: 404 if the item can not be found
         HTTPException: 500 if the item could be found but the data is invalid
 
     Returns:
         Item: The requested item
     """
     try:
-        return ItemRepo.getItem (itemId)
+        return ItemRepo.getItem(itemId)
 
     except ValidationError as ve:
-        raise HTTPException (status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str (ve)) from ve
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(ve)) from ve
 
     except ItemNotFound as itemNotFound:
-        raise HTTPException (status.HTTP_404_NOT_FOUND, detail=str (itemNotFound)) from itemNotFound
-
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(itemNotFound)) from itemNotFound
 
 
 @app.post("/items/")
@@ -79,10 +76,16 @@ async def createItem(item: Item) -> Item:
     Args:
         item (Item): Item to insert. Incoming item-id will be disregarded, actual id will be generated serverside.
 
+    Raises:
+        HTTPException: 422 if the item-data is malformed
+
     Returns:
         Item: The newly created item (including the actual id)
     """
-    return ItemRepo.insertItem (item)
+    # Only thing that can go wrong is malformed data (validation error).
+    # This is handeled by FastAPI, we won't even enter the function then.
+    # Mention this case in docstring tho!
+    return ItemRepo.insertItem(item)
 
 
 @app.put("/items/{itemId}")
@@ -103,17 +106,17 @@ async def updateItem(itemId: int, item: Item) -> Item:
     # TODO: allow partial input -> use http.PATCH
     # Basic sanity check: do the itemIds in the route and the data match?
     if itemId != item.id:
-        raise HTTPException (status.HTTP_400_BAD_REQUEST, detail=f"item-id mismatch between route and payload")
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=f"item-id mismatch between route and payload")
 
     try:
-        return ItemRepo.updateItem (item)
-    
+        return ItemRepo.updateItem(item)
+
     except ItemNotFound as itemNotFound:
-        raise HTTPException (status.HTTP_404_NOT_FOUND, detail=str (itemNotFound)) from itemNotFound
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(itemNotFound)) from itemNotFound
 
 
 @app.delete("/items/{itemId}")
-asnyc def deleteItem(itemId: int):
+async def deleteItem(itemId: int):
     """Deletes the specified item
 
     Args:
@@ -123,19 +126,16 @@ asnyc def deleteItem(itemId: int):
         HTTPException: 404 if the specified item does not exist
     """
     try:
-        ItemRepo.deleteItem (itemId)
-    
+        ItemRepo.deleteItem(itemId)
+
     except ItemNotFound as itemNotFound:
-        raise HTTPException (status.HTTP_404_NOT_FOUND, detail=str (itemNotFound)) from itemNotFound
-    
-
-
-
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(itemNotFound)) from itemNotFound
 
 
 ##########
 # Orchestration
 # Set up underlying layers
+
 
 @app.on_event("startup")
 async def startup():
@@ -162,7 +162,5 @@ def setupMongoConnection():
         return MongoDatabaseConnection(connectionConfig)
 
     except KeyError as ke:
-        logging.fatal(
-            f"ERROR - Database Connection - no valid configuration provided: missing env-var {str(ke)}"
-        )
+        logging.fatal(f"ERROR - Database Connection - no valid configuration provided: missing env-var {str(ke)}")
         exit(1)
