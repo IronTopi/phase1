@@ -7,4 +7,7 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requ
 
 ENV PYTHONPATH=/app
 
-#CMD ["python", "app/seeder.py"]
+RUN adduser seeder
+USER seeder
+
+CMD ["python", "app/seeder.py"]

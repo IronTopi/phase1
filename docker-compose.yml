@@ -30,7 +30,6 @@ services:
       - ./seeder/src:/app # two-way mount at runtime
       - ./data.json:/app/data.json:ro
 
-    command: python app/seeder.py
 
   backend:
     build:

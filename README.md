@@ -127,3 +127,4 @@ The tests will pollute and modify the database!
 - SSL, rate-limiting (maybe offload to API-Gateway like [Kong](https://konghq.com/))
 - Proper logging (larger systems implement log aggregation: let something like loki read your stdout/stderr and dump it into a centralized collection)
 - Providing a dedicated test-database (database/collection or mock)
+- Bake application into images instead of mounting the folders at runtime
