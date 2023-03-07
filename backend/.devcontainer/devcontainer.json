@@ -64,7 +64,7 @@
   "shutdownAction": "none",
 
   // Packages only required for development:
-  "postCreateCommand": "pip install pylint black pytest httpx"
+  "postCreateCommand": "pip install pylint black pytest pytest-cov httpx"
 
   // Configure tool-specific properties.
 

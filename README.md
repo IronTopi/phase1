@@ -102,20 +102,35 @@ INFO:     192.168.0.80:59314 - "GET /items/1 HTTP/1.1" 500 Internal Server Error
 
 Tests for the **backend**-service (mostly integration tests) are located in the folder `backend/src/test`.
 To run the tests start the whole application and connect to the backend-service with a [VSCode Dev Container](https://code.visualstudio.com/docs/devcontainers/containers).
-This will install the required python-modules and let you run `pytest` from the workspace-folder (`/app` inside the container):
+This will install the required python-modules and let you run `pytest --cov` from the workspace-folder (`/app` inside the container):
 
 ```
-root@907a8d81a125:/app# pytest
-=================================== test session starts ====================================
+============================= test session starts ==============================
 platform linux -- Python 3.11.2, pytest-7.2.2, pluggy-1.0.0
 rootdir: /app
-plugins: anyio-3.6.2
+plugins: cov-4.0.0, anyio-3.6.2
 collected 9 items
 
-test/Item_test.py ..                                                                 [ 22%]
-test/backend_http_test.py .......                                                    [100%]
+test/Item_test.py ..                                                     [ 22%]
+test/backend_http_integration_test.py .......                            [100%]
 
-==================================== 9 passed in 0.56s =====================================
+---------- coverage: platform linux, python 3.11.2-final-0 -----------
+Name                                    Stmts   Miss  Cover
+-----------------------------------------------------------
+api/models/Item.py                         37      4    89%
+auth.py                                    15      9    40%
+backend_http.py                            52      9    83%
+dataaccess/IDatabaseConnection.py          22      6    73%
+dataaccess/ItemDataRepository.py           43      8    81%
+dataaccess/MongoDatabaseConnection.py      47      2    96%
+test/Item_test.py                          10      0   100%
+test/backend_http_integration_test.py      51      3    94%
+test/backend_http_test.py                   0      0   100%
+-----------------------------------------------------------
+TOTAL                                     277     41    85%
+
+
+============================== 9 passed in 0.86s ===============================
 ```
 
 **Attention**:
