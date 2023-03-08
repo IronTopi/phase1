@@ -1,0 +1,4 @@
+# Requirements for the backend-applications
+fastapi==0.92.0
+pymongo==4.3.3
+pydantic==1.10.5

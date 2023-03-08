@@ -1,0 +1,61 @@
+services:
+  database:
+    image: mongo:${MONGO_VERSION}
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+    volumes:
+      - database_persistence:/data/db
+
+    ports:
+      - "27017:27017" # TODO: remove for production! Access through port forwarding!
+
+  seeder:
+    build:
+      context: ./seeder
+      dockerfile: Dockerfile
+
+    depends_on:
+      database:
+        condition: service_started
+
+    environment:
+      - MONGO_IP=${MONGO_IP} # TODO: >>-style injection?
+      - MONGO_PORT=${MONGO_PORT}
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DB=${MONGO_DB}
+      - MONGO_COLLECTION=${MONGO_COLLECTION}
+    volumes:
+      - ./seeder/src:/app # two-way mount at runtime
+      - ./data.json:/app/data.json:ro
+
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      seeder:
+        condition: service_completed_successfully
+      database:
+        condition: service_started
+
+    environment:
+      - MONGO_IP=${MONGO_IP}
+      - MONGO_PORT=${MONGO_PORT}
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DB=${MONGO_DB}
+      - MONGO_COLLECTION=${MONGO_COLLECTION}
+      - API_USER=${API_USER}
+      - API_PASSWORD=${API_PASSWORD}
+    volumes:
+      - ./backend/src:/app # two-way mount at runtime
+    ports:
+      - "8080:80"
+
+    command: uvicorn backend_http:app --host 0.0.0.0 --port 80
+
+volumes:
+  database_persistence:
