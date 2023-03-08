@@ -12,7 +12,7 @@ class IDatabaseConnection(ABC):
         Args:
             connectionData (Dict[str, Any]): Connection config (connection string), shape depends on specific database
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def getAllItems(self) -> List[Dict]:
@@ -22,7 +22,7 @@ class IDatabaseConnection(ABC):
         Returns:
             List [Item]: All items as full models (not only id)
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def getItem(self, itemId: int) -> Dict:
@@ -34,7 +34,7 @@ class IDatabaseConnection(ABC):
         Returns:
             Dict: Item data
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def insertItem(self, itemData: Dict):
@@ -43,7 +43,7 @@ class IDatabaseConnection(ABC):
         Args:
             itemData (Dict): New item data
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def updateItem(self, itemData: Dict) -> Dict:
@@ -55,7 +55,7 @@ class IDatabaseConnection(ABC):
         Returns:
             Dict: New item data
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def deleteItem(self, itemId: int):
@@ -64,11 +64,10 @@ class IDatabaseConnection(ABC):
         Args:
             itemId (int): Id of the item to delete
         """
-        pass
+        raise NotImplementedError
 
 
 # TODO: move to api.Errors
 class ItemNotFound(Exception):
     """Specified item does not exist."""
-
     pass

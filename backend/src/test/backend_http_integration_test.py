@@ -4,8 +4,10 @@ DANGER:
 This will put some trash into your database and modify existing items!!!"""
 
 import random
+import os
 
 import pytest
+from fastapi import HTTPException
 from fastapi.testclient import TestClient
 from auth import validateCredentials
 
@@ -27,17 +29,23 @@ def buildGoodItemJson():
 @pytest.fixture()
 def client():
     # Route test-data into different database
-
+    originalDb = os.environ["MONGO_DB"]
+    os.environ["MONGO_DB"] = "test_db"
+    
+    
     # Disable security in FastAPI
     app.dependency_overrides[validateCredentials] = lambda: True
     with TestClient(app) as _client:
         yield _client
 
+    # Reset back to original DB
+    os.environ["MONGO_DB"] = originalDb
+
 
 @pytest.fixture()
 def fillDatabase(client: TestClient):
     # Populate database
-    for i in range(100):
+    for i in range(50, 100):
         client.post("/items/", json=buildGoodItemJson())
 
 
@@ -120,6 +128,16 @@ def test_updateItem(client: TestClient):
     assert response.status_code == 200
     assert response.json() == item
 
+    # ID mismatch (URL vs id-field)
+    response = client.put(f"/items/-1", json=item)
+    assert response.status_code == 400
+
+    # test non-existing item (item not found)
+    item ["id"] = -1
+    response = client.put(f"/items/{item['id']}", json=item)
+    assert response.status_code == 404
+
+
 
 def test_deleteItem(client: TestClient):
     # Create good Item and then delete it
@@ -143,3 +161,7 @@ def test_deleteItem(client: TestClient):
 
     response = client.delete(f"/items/{itemId}")
     assert response.status_code == 200
+
+    # Try to delete non-existing item
+    response = client.delete(f"/items/-1")
+    assert response.status_code == 404

@@ -18,6 +18,7 @@ You need to be able to run `docker`/`docker compose` on your machine.
 
 If you're running this application on a linux host, you can use the provided convenience scripts.
 **First make sure the script-files are executable (`chmod a+x ./start.sh` etc.).**
+If you want to eliminate all possible permission-related troubles just do a reckless `chmod -R 777 ./phase1`.
 
 | script        | action                                                              |
 | ------------- | ------------------------------------------------------------------- |
@@ -67,8 +68,6 @@ The following technologies are being used:
 - Database: [MongoDB](https://www.mongodb.com/)
 - Containerization: 🐳 [docker](https://www.docker.com/)
 
-
-
 ### Versions
 
 The version of the MongoDB is pinned in the `.env` file.
@@ -102,44 +101,43 @@ INFO:     192.168.0.80:59314 - "GET /items/1 HTTP/1.1" 500 Internal Server Error
 
 Tests for the **backend**-service (mostly integration tests) are located in the folder `backend/src/test`.
 To run the tests start the whole application and connect to the backend-service with a [VSCode Dev Container](https://code.visualstudio.com/docs/devcontainers/containers).
-This will install the required python-modules and let you run `pytest --cov` from the workspace-folder (`/app` inside the container):
+This will install the required python-modules and let you run `pytest --cov` from the workspace-folder (`/app` inside the dev-container):
 
 ```
 ============================= test session starts ==============================
 platform linux -- Python 3.11.2, pytest-7.2.2, pluggy-1.0.0
 rootdir: /app
 plugins: cov-4.0.0, anyio-3.6.2
-collected 9 items
+collected 20 items
 
-test/Item_test.py ..                                                     [ 22%]
+test/Item_test.py ...........                                            [ 55%]
+test/auth_test.py ..                                                     [ 65%]
 test/backend_http_integration_test.py .......                            [100%]
 
 ---------- coverage: platform linux, python 3.11.2-final-0 -----------
 Name                                    Stmts   Miss  Cover
 -----------------------------------------------------------
-api/models/Item.py                         37      4    89%
-auth.py                                    15      9    40%
-backend_http.py                            52      9    83%
+api/models/Item.py                         37      0   100%
+auth.py                                    15      0   100%
+backend_http.py                            52      4    92%
 dataaccess/IDatabaseConnection.py          22      6    73%
-dataaccess/ItemDataRepository.py           43      8    81%
-dataaccess/MongoDatabaseConnection.py      47      2    96%
-test/Item_test.py                          10      0   100%
-test/backend_http_integration_test.py      51      3    94%
+dataaccess/ItemDataRepository.py           43      4    91%
+dataaccess/MongoDatabaseConnection.py      47      0   100%
+test/Item_test.py                          21      0   100%
+test/auth_test.py                          16      0   100%
+test/backend_http_integration_test.py      63      3    95%
 test/backend_http_test.py                   0      0   100%
 -----------------------------------------------------------
-TOTAL                                     277     41    85%
+TOTAL                                     316     17    95%
 
 
-============================== 9 passed in 0.86s ===============================
+============================== 20 passed in 0.51s ==============================
 ```
-
-**Attention**:
-The tests will pollute and modify the database!
 
 ## Things that have not been done
 
 - API-Versioning (URL-versioning like `myapi/v1/`, see [FastAPI routers](https://fastapi.tiangolo.com/tutorial/bigger-applications/))
 - SSL, rate-limiting (maybe offload to API-Gateway like [Kong](https://konghq.com/))
 - Proper logging (larger systems implement log aggregation: let something like loki read your stdout/stderr and dump it into a centralized collection)
-- Providing a dedicated test-database (database/collection or mock)
-- Bake application into images instead of mounting the folders at runtime
+- Bake application into images instead of mounting the folders at runtime (in CI-pipeline)
+- Automate tests in CI-pipeline
