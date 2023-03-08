@@ -37,11 +37,14 @@ class IDatabaseConnection(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def insertItem(self, itemData: Dict):
+    def insertItem(self, itemData: Dict) -> Dict:
         """Inserts item.
 
         Args:
             itemData (Dict): New item data
+
+        Returns:
+            Dict: Data of the newly inserted item, including id
         """
         raise NotImplementedError
 
@@ -70,4 +73,5 @@ class IDatabaseConnection(ABC):
 # TODO: move to api.Errors
 class ItemNotFound(Exception):
     """Specified item does not exist."""
+
     pass

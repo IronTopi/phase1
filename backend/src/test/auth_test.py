@@ -19,5 +19,5 @@ def test_LoginFailure():
     storedPassword = (os.environ["API_PASSWORD"] + "nope").encode("utf-8")
     validCredentials = HTTPBasicCredentials(username=storedUsername, password=storedPassword)
 
-    with pytest.raises(HTTPException) as e_info:
+    with pytest.raises(HTTPException) as info:
         validateCredentials(validCredentials)

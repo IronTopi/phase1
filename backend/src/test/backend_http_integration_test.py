@@ -29,10 +29,10 @@ def buildGoodItemJson():
 @pytest.fixture()
 def client():
     # Route test-data into different database
+    # MongoDB must be used!
     originalDb = os.environ["MONGO_DB"]
     os.environ["MONGO_DB"] = "test_db"
-    
-    
+
     # Disable security in FastAPI
     app.dependency_overrides[validateCredentials] = lambda: True
     with TestClient(app) as _client:
@@ -45,16 +45,16 @@ def client():
 @pytest.fixture()
 def fillDatabase(client: TestClient):
     # Populate database
-    for i in range(50, 100):
+    for _ in range(50, 100):
         client.post("/items/", json=buildGoodItemJson())
 
 
-def test_getAllItems(client: TestClient):
+def test_getAllItems(client: TestClient, fillDatabase):
     response = client.get("/items/")
     assert response.status_code == 200
 
 
-def test_getItem_Good(client: TestClient):
+def test_getItem_Good(client: TestClient, fillDatabase):
     response = client.get("/items/")
     assert response.status_code == 200
 
@@ -133,10 +133,9 @@ def test_updateItem(client: TestClient):
     assert response.status_code == 400
 
     # test non-existing item (item not found)
-    item ["id"] = -1
+    item["id"] = -1
     response = client.put(f"/items/{item['id']}", json=item)
     assert response.status_code == 404
-
 
 
 def test_deleteItem(client: TestClient):
