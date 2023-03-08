@@ -16,7 +16,7 @@ You need to be able to run `docker`/`docker compose` on your machine.
 
 ### Starting and stopping the system
 
-If you're running this application on a linux host, you can use the provided convenience scripts.
+If you're running this application on a linux host you can use the provided convenience scripts.
 **First make sure the script-files are executable (`chmod a+x ./start.sh` etc.).**
 If you want to eliminate all possible permission-related troubles just do a reckless `chmod -R 777 ./phase1`.
 
@@ -138,6 +138,6 @@ TOTAL                                     316     17    95%
 
 - API-Versioning (URL-versioning like `myapi/v1/`, see [FastAPI routers](https://fastapi.tiangolo.com/tutorial/bigger-applications/))
 - SSL, rate-limiting (maybe offload to API-Gateway like [Kong](https://konghq.com/))
-- Proper logging (larger systems implement log aggregation: let something like loki read your stdout/stderr and dump it into a centralized collection)
+- Proper logging (implement log aggregation: let something like loki read your stdout/stderr and dump it into a centralized database, setup a nice dashboard or go full ELK-stack)
 - Bake application into images instead of mounting the folders at runtime (in CI-pipeline)
 - Automate tests in CI-pipeline
