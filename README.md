@@ -111,30 +111,33 @@ This will install the required python-modules and let you run `pytest --cov` (or
 platform linux -- Python 3.11.2, pytest-7.2.2, pluggy-1.0.0
 rootdir: /app
 plugins: cov-4.0.0, anyio-3.6.2
-collected 20 items
+collected 29 items
 
-test/Item_test.py ...........                                            [ 55%]
-test/auth_test.py ..                                                     [ 65%]
+test/ItemDataRepository_test.py .........                                [ 31%]
+test/Item_test.py ...........                                            [ 68%]
+test/auth_test.py ..                                                     [ 75%]
 test/backend_http_integration_test.py .......                            [100%]
 
 ---------- coverage: platform linux, python 3.11.2-final-0 -----------
-Name                                    Stmts   Miss  Cover
------------------------------------------------------------
-api/models/Item.py                         37      0   100%
-auth.py                                    15      0   100%
-backend_http.py                            52      4    92%
-dataaccess/IDatabaseConnection.py          22      6    73%
-dataaccess/ItemDataRepository.py           43      4    91%
-dataaccess/MongoDatabaseConnection.py      47      0   100%
-test/Item_test.py                          21      0   100%
-test/auth_test.py                          16      0   100%
-test/backend_http_integration_test.py      63      3    95%
-test/backend_http_test.py                   0      0   100%
------------------------------------------------------------
-TOTAL                                     316     17    95%
+Name                                              Stmts   Miss  Cover
+---------------------------------------------------------------------
+api/models/Item.py                                   37      0   100%
+auth.py                                              15      0   100%
+backend_http.py                                      52      4    92%
+dataaccess/IDatabaseConnection.py                    22      6    73%
+dataaccess/ItemDataRepository.py                     43      2    95%
+dataaccess/MongoDatabaseConnection.py                47      0   100%
+test/ItemDataRepository_test.py                      58      0   100%
+test/Item_test.py                                    21      0   100%
+test/auth_test.py                                    16      0   100%
+test/backend_http_integration_test.py                63      0   100%
+test/mocks/MockDatabaseConnection.py                 31      0   100%
+test/mocks/MockDatabaseConnectionFaultyItems.py      10      0   100%
+---------------------------------------------------------------------
+TOTAL                                               415     12    97%
 
 
-============================== 20 passed in 0.51s ==============================
+============================== 29 passed in 1.49s ==============================
 ```
 
 ## Things that have not been done
