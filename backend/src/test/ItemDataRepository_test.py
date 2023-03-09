@@ -1,8 +1,11 @@
 import random
 import pytest
 
+from pydantic import ValidationError
+
 from dataaccess.ItemDataRepository import ItemDataRepository, ItemNotFound
 from test.mocks.MockDatabaseConnection import MockDatabaseConnection
+from test.mocks.MockDatabaseConnectionFaultyItems import MockDatabaseConnectionFaultyItems as FaultyDatabase
 from test.backend_http_integration_test import buildGoodItemJson
 
 from api.models.Item import Item
@@ -35,6 +38,18 @@ def filledRepo(itemDataRepository: ItemDataRepository) -> ItemDataRepository:
     yield itemDataRepository
 
 
+@pytest.fixture
+def faultyRepoSetup() -> ItemDataRepository:
+    """Produces an ItemDataRepository with a faulty database.
+    Returns non-Item-like data for any requested itemId.
+
+    Yields:
+        ItemDataRepository: faulty ItemDataRepository
+    """
+    dataRepo = ItemDataRepository(FaultyDatabase({}))
+    yield dataRepo
+
+
 def test_deleteItem(filledRepo: ItemDataRepository):
     allItems = filledRepo.getAllItems()
 
@@ -49,6 +64,10 @@ def test_deleteNonExistingItem(itemDataRepository: ItemDataRepository):
 
     with pytest.raises(ItemNotFound) as info:
         itemDataRepository.deleteItem(wrongItemId)
+
+
+def test_getAllItems(filledRepo: ItemDataRepository):
+    allItems = filledRepo.getAllItems()
 
 
 def test_getItem(filledRepo: ItemDataRepository):
@@ -85,3 +104,15 @@ def test_updateItem(filledRepo: ItemDataRepository):
     randomItem.city = randomItem.city + " changed"
     # Nothing supposed to habben if the delete went through
     filledRepo.updateItem(randomItem)
+
+
+############
+# Faulty data in database
+def test_insertItem_faulty(faultyRepoSetup: ItemDataRepository):
+    with pytest.raises(ValidationError) as info:
+        faultyRepoSetup.insertItem(Item.parse_obj(buildGoodItemJson()))
+
+
+def test_getItem_faulty(faultyRepoSetup: ItemDataRepository):
+    with pytest.raises(ValidationError) as info:
+        faultyRepoSetup.getItem(1)
