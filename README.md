@@ -1,6 +1,6 @@
 # phase1
 
-A small example of a RESTful CRUD-application.
+A small example of a RESTful CRUD-application, served as http-API.
 
 Lets you read, insert, update and delete entries containing
 
@@ -8,7 +8,7 @@ Lets you read, insert, update and delete entries containing
 - Start date
 - and some more, see [Data](#data)
 
-## Setup
+## Installing/Getting started
 
 ### Requirements
 
@@ -28,7 +28,7 @@ If you want to eliminate all possible permission-related troubles just do a reck
 
 If you don't run this on linux, just take a look inside the scripts and execute the commands manually.
 
-## Connecting
+### Connecting
 
 The API will be served on Port `8080` of the host.
 All endpoints are located under the `/items/`-route.
@@ -41,7 +41,7 @@ The **default credentials** (set in `.env`) are:
 - User: `dogbert`
 - Password: `catbert`
 
-## Data
+### Data
 
 Items look like following example:
 
@@ -59,16 +59,19 @@ Items look like following example:
 
 A set of 1000 items will be seeded into the database on the first startup of the application.
 
-## Development and Tech
+## Developing
 
+
+### Built with
 The following technologies are being used:
 
 - http-API: [FastAPI](https://fastapi.tiangolo.com/)
 - Data validation: [Pydantic](https://docs.pydantic.dev/)
 - Database: [MongoDB](https://www.mongodb.com/)
 - Containerization: 🐳 [docker](https://www.docker.com/)
+- IDE: [VSCode](https://code.visualstudio.com/) with [Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers)
 
-### Versions
+### Versions of base images
 
 The version of the MongoDB is pinned in the `.env` file.
 The **seeder** and **backend**-services have their python-version defined in their respective `Dockerfile`s.
@@ -141,3 +144,4 @@ TOTAL                                     316     17    95%
 - Proper logging (implement log aggregation: let something like loki read your stdout/stderr and dump it into a centralized database, setup a nice dashboard or go full ELK-stack)
 - Bake application into images instead of mounting the folders at runtime (in CI-pipeline)
 - Automate tests in CI-pipeline
+- Include type checking (mypy)
