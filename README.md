@@ -104,7 +104,7 @@ INFO:     192.168.0.80:59314 - "GET /items/1 HTTP/1.1" 500 Internal Server Error
 
 Tests for the **backend**-service (mostly integration tests) are located in the folder `backend/src/test`.
 To run the tests start the whole application and connect to the backend-service with a [VSCode Dev Container](https://code.visualstudio.com/docs/devcontainers/containers).
-This will install the required python-modules and let you run `pytest --cov` from the workspace-folder (`/app` inside the dev-container):
+This will install the required python-modules and let you run `pytest --cov` (or `pytest --cov --cov-report=html` for a fancy report) from the workspace-folder (`/app` inside the dev-container):
 
 ```
 ============================= test session starts ==============================
