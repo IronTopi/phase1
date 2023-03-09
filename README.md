@@ -1,6 +1,6 @@
 # phase1
 
-A small example of a RESTful CRUD-application.
+A small example of a RESTful CRUD-application, served as http-API.
 
 Lets you read, insert, update and delete entries containing
 
@@ -8,7 +8,7 @@ Lets you read, insert, update and delete entries containing
 - Start date
 - and some more, see [Data](#data)
 
-## Setup
+## Installing/Getting started
 
 ### Requirements
 
@@ -28,7 +28,7 @@ If you want to eliminate all possible permission-related troubles just do a reck
 
 If you don't run this on linux, just take a look inside the scripts and execute the commands manually.
 
-## Connecting
+### Connecting
 
 The API will be served on Port `8080` of the host.
 All endpoints are located under the `/items/`-route.
@@ -41,7 +41,7 @@ The **default credentials** (set in `.env`) are:
 - User: `dogbert`
 - Password: `catbert`
 
-## Data
+### Data
 
 Items look like following example:
 
@@ -59,16 +59,19 @@ Items look like following example:
 
 A set of 1000 items will be seeded into the database on the first startup of the application.
 
-## Development and Tech
+## Developing
 
+
+### Built with
 The following technologies are being used:
 
 - http-API: [FastAPI](https://fastapi.tiangolo.com/)
 - Data validation: [Pydantic](https://docs.pydantic.dev/)
 - Database: [MongoDB](https://www.mongodb.com/)
 - Containerization: 🐳 [docker](https://www.docker.com/)
+- IDE: [VSCode](https://code.visualstudio.com/) with [Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers)
 
-### Versions
+### Versions of base images
 
 The version of the MongoDB is pinned in the `.env` file.
 The **seeder** and **backend**-services have their python-version defined in their respective `Dockerfile`s.
@@ -101,37 +104,40 @@ INFO:     192.168.0.80:59314 - "GET /items/1 HTTP/1.1" 500 Internal Server Error
 
 Tests for the **backend**-service (mostly integration tests) are located in the folder `backend/src/test`.
 To run the tests start the whole application and connect to the backend-service with a [VSCode Dev Container](https://code.visualstudio.com/docs/devcontainers/containers).
-This will install the required python-modules and let you run `pytest --cov` from the workspace-folder (`/app` inside the dev-container):
+This will install the required python-modules and let you run `pytest --cov` (or `pytest --cov --cov-report=html` for a fancy report) from the workspace-folder (`/app` inside the dev-container):
 
 ```
 ============================= test session starts ==============================
 platform linux -- Python 3.11.2, pytest-7.2.2, pluggy-1.0.0
 rootdir: /app
 plugins: cov-4.0.0, anyio-3.6.2
-collected 20 items
+collected 29 items
 
-test/Item_test.py ...........                                            [ 55%]
-test/auth_test.py ..                                                     [ 65%]
+test/ItemDataRepository_test.py .........                                [ 31%]
+test/Item_test.py ...........                                            [ 68%]
+test/auth_test.py ..                                                     [ 75%]
 test/backend_http_integration_test.py .......                            [100%]
 
 ---------- coverage: platform linux, python 3.11.2-final-0 -----------
-Name                                    Stmts   Miss  Cover
------------------------------------------------------------
-api/models/Item.py                         37      0   100%
-auth.py                                    15      0   100%
-backend_http.py                            52      4    92%
-dataaccess/IDatabaseConnection.py          22      6    73%
-dataaccess/ItemDataRepository.py           43      4    91%
-dataaccess/MongoDatabaseConnection.py      47      0   100%
-test/Item_test.py                          21      0   100%
-test/auth_test.py                          16      0   100%
-test/backend_http_integration_test.py      63      3    95%
-test/backend_http_test.py                   0      0   100%
------------------------------------------------------------
-TOTAL                                     316     17    95%
+Name                                              Stmts   Miss  Cover
+---------------------------------------------------------------------
+api/models/Item.py                                   37      0   100%
+auth.py                                              15      0   100%
+backend_http.py                                      52      4    92%
+dataaccess/IDatabaseConnection.py                    22      6    73%
+dataaccess/ItemDataRepository.py                     43      2    95%
+dataaccess/MongoDatabaseConnection.py                47      0   100%
+test/ItemDataRepository_test.py                      58      0   100%
+test/Item_test.py                                    21      0   100%
+test/auth_test.py                                    16      0   100%
+test/backend_http_integration_test.py                63      0   100%
+test/mocks/MockDatabaseConnection.py                 31      0   100%
+test/mocks/MockDatabaseConnectionFaultyItems.py      10      0   100%
+---------------------------------------------------------------------
+TOTAL                                               415     12    97%
 
 
-============================== 20 passed in 0.51s ==============================
+============================== 29 passed in 1.49s ==============================
 ```
 
 ## Things that have not been done
@@ -141,3 +147,4 @@ TOTAL                                     316     17    95%
 - Proper logging (implement log aggregation: let something like loki read your stdout/stderr and dump it into a centralized database, setup a nice dashboard or go full ELK-stack)
 - Bake application into images instead of mounting the folders at runtime (in CI-pipeline)
 - Automate tests in CI-pipeline
+- Include type checking (mypy)

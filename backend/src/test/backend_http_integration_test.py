@@ -41,6 +41,9 @@ def client():
     # Reset back to original DB
     os.environ["MONGO_DB"] = originalDb
 
+    # TODO: delete test_db?
+    # Not necessary when running the tests in ephemeral containers in the pipeline
+
 
 @pytest.fixture()
 def fillDatabase(client: TestClient):
@@ -74,8 +77,6 @@ def test_getItem_Bad(client: TestClient):
 
 def test_createItem_Good(client: TestClient):
     # Create good Item
-
-    # TODO: randomize data
     response = client.post(
         "/items/",
         json={
