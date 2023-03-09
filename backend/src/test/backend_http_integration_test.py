@@ -52,6 +52,21 @@ def fillDatabase(client: TestClient):
         client.post("/items/", json=buildGoodItemJson())
 
 
+def getNonExistingId(client: TestClient) -> int:
+    response = client.get("/items/")
+    allItems = response.json()
+    allIds = [item["id"] for item in allItems]
+
+    nonExistingId = 1
+    while True:
+        nonExistingId = nonExistingId + 1
+
+        if nonExistingId not in allIds:
+            break
+
+    return nonExistingId
+
+
 def test_getAllItems(client: TestClient, fillDatabase):
     response = client.get("/items/")
     assert response.status_code == 200
@@ -70,8 +85,8 @@ def test_getItem_Good(client: TestClient, fillDatabase):
 
 
 def test_getItem_Bad(client: TestClient):
-    # There should be no Item with a negative id
-    response = client.get("/items/-1")
+    nonExistingId = getNonExistingId(client)
+    response = client.get(f"/items/{str(nonExistingId)}")
     assert response.status_code == 404
 
 
@@ -113,7 +128,7 @@ def test_createItem_Bad(client: TestClient):
     assert response.status_code == 422
 
 
-def test_updateItem(client: TestClient):
+def test_updateItem(client: TestClient, fillDatabase):
     response = client.get("/items/")
     assert response.status_code == 200
 
@@ -130,11 +145,14 @@ def test_updateItem(client: TestClient):
     assert response.json() == item
 
     # ID mismatch (URL vs id-field)
-    response = client.put(f"/items/-1", json=item)
+    twoItems = random.sample(allItems, 2)
+    idOne = twoItems[0]["id"]
+    dataTwo = twoItems[1]
+    response = client.put(f"/items/{str(idOne)}", json=dataTwo)
     assert response.status_code == 400
 
     # test non-existing item (item not found)
-    item["id"] = -1
+    item["id"] = getNonExistingId(client)
     response = client.put(f"/items/{item['id']}", json=item)
     assert response.status_code == 404
 
@@ -163,5 +181,6 @@ def test_deleteItem(client: TestClient):
     assert response.status_code == 200
 
     # Try to delete non-existing item
-    response = client.delete(f"/items/-1")
+    nonExistingId = getNonExistingId(client)
+    response = client.delete(f"/items/{str(nonExistingId)}")
     assert response.status_code == 404

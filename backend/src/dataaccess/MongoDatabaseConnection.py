@@ -60,7 +60,6 @@ class MongoDatabaseConnection(IDatabaseConnection):
         if not itemData:
             raise ItemNotFound(f"item with id '{str(itemId)}' not found in database")
 
-        # TODO: generic "not found"-exception
         return itemData
 
     def insertItem(self, itemData: Dict):

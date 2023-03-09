@@ -1,6 +1,6 @@
 """Entry-point for the whole application.
-
 Does some orchestration (dependencies) and runs the http-backend."""
+
 from typing import List
 import os
 import logging
@@ -8,8 +8,6 @@ import logging
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
-# TODO: move all domain-level validation out of the http-layer?
-# Introduce Domain-Exceptions ouside?
 from pydantic import ValidationError
 
 from auth import validateCredentials

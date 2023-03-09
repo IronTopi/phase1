@@ -1,4 +1,5 @@
-"""Accepts and delivers domain models in and out of persistence.
+"""Exchanges domain models with the business layer and keeps the persistence concerns outside.
+Exchanges data in a generic format with the actual persistence layer interface.
 
 Is _not_ designed as an interface!
 (But might be, could be useful to do a more isolated unit-test on the API)
